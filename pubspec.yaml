@@ -32,7 +32,9 @@ dependencies:
     sdk: flutter
   carousel_slider: ^4.2.1 # atau versi terbaru
   video_player: ^2.8.2
-  google_generative_ai: ^0.4.7 # Atau versi terbaru yang tersedia
+  google_generative_ai: ^0.4.0 # Atau versi terbaru yang tersedia
+  url_launcher: ^6.2.1 # Atau versi terbaru yang tersedia
+  webview_flutter: ^4.7.0 # Atau versi terbaru yang kompatibel
   video_player_web: ^2.1.2
   flutter_inappwebview: ^6.1.5
   # The following adds the Cupertino Icons font to your application.

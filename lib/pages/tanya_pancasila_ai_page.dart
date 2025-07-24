@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_generative_ai/google_generative_ai.dart'; // Pastikan package sudah ditambahkan
+import 'package:webview_flutter/webview_flutter.dart';
 
 class TanyaPancasilaAiPage extends StatefulWidget {
   const TanyaPancasilaAiPage({super.key});
@@ -9,87 +9,81 @@ class TanyaPancasilaAiPage extends StatefulWidget {
 }
 
 class _TanyaPancasilaAiPageState extends State<TanyaPancasilaAiPage> {
-  final TextEditingController _textController = TextEditingController();
-  String _searchResult = '';
-  bool _isLoading = false;
-  GenerativeModel? _model;
+  late final WebViewController _controller;
+  bool _isLoadingPage = true;
+  String _errorMessage = '';
 
-  // Ganti dengan API Key Anda atau cara aman untuk mengambilnya
-  // PENTING: Jangan hardcode API Key di kode produksi.
-  // Gunakan environment variables: flutter run --dart-define=GEMINI_API_KEY=YOUR_API_KEY
-  static const String _apiKey = String.fromEnvironment('GEMINI_API_KEY');
-
+  // URL website Gemini yang ingin ditampilkan
+  final String _geminiWebsiteUrl = 'https://gemini.google.com/app';
+  // Pertimbangkan untuk menambahkan parameter bahasa jika perlu, misal:
+  // final String _geminiWebsiteUrl = 'https://gemini.google.com/app?hl=id';
 
   @override
   void initState() {
     super.initState();
-    if (_apiKey.isEmpty) {
-      print(
-          'API Key Gemini tidak ditemukan. Set GEMINI_API_KEY environment variable.');
-      // Pertimbangkan untuk menampilkan pesan di UI jika API Key tidak ada
-      _searchResult =
-      'Konfigurasi AI tidak ditemukan. Fitur ini mungkin tidak berfungsi.';
-    } else {
-      _model = GenerativeModel(model: 'gemini-pro', apiKey: _apiKey);
-    }
-  }
 
-  Future<void> _askGemini(String query) async {
-    if (_model == null) {
-      setState(() {
-        _searchResult =
-        'Fitur AI tidak tersedia (API Key tidak dikonfigurasi).';
-        _isLoading = false;
-      });
-      return;
-    }
-    if (query
-        .trim()
-        .isEmpty) {
-      setState(() {
-        _searchResult = 'Silakan masukkan pertanyaan Anda.';
-        _isLoading = false;
-      });
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-      _searchResult = '';
-    });
-
-    final String fullPrompt = """
-Anda adalah asisten AI yang berpengetahuan luas tentang Pancasila, dasar negara Republik Indonesia.
-Tugas Anda adalah menjawab pertanyaan pengguna HANYA jika pertanyaan tersebut berkaitan dengan sila-sila Pancasila, butir-butir pengamalan Pancasila, sejarah Pancasila, atau implementasi nilai-nilai Pancasila.
-Berikan jawaban yang jelas, ringkas, dan mudah dipahami.
-
-Jika pertanyaan pengguna di luar topik Pancasila, jawablah dengan sopan:
-"Maaf, saat ini saya hanya dapat membantu dengan pertanyaan seputar Pancasila."
-
-Pertanyaan Pengguna: "$query"
-
-Jawaban Anda (terkait Pancasila atau pesan penolakan):
-""";
-
-    try {
-      final content = [Content.text(fullPrompt)];
-      final response = await _model!.generateContent(content);
-
-      setState(() {
-        _searchResult =
-            response.text ?? 'Tidak ada jawaban atau terjadi kesalahan.';
-      });
-    } catch (e) {
-      setState(() {
-        _searchResult =
-        'Terjadi kesalahan saat menghubungi AI: ${e.toString()}';
-      });
-      print('Error calling Gemini API: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted) // Izinkan JavaScript
+      ..setBackgroundColor(const Color(0x00000000)) // Transparan jika perlu, atau warna lain
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            // Update loading bar.
+            // Anda bisa menambahkan indikator progres kustom di sini
+            print('WebView is loading (progress : $progress%)');
+          },
+          onPageStarted: (String url) {
+            if (mounted) {
+              setState(() {
+                _isLoadingPage = true;
+                _errorMessage = ''; // Reset error message
+              });
+            }
+            print('Page started loading: $url');
+          },
+          onPageFinished: (String url) {
+            if (mounted) {
+              setState(() {
+                _isLoadingPage = false;
+              });
+            }
+            print('Page finished loading: $url');
+            // Anda bisa mencoba menyuntikkan JavaScript di sini jika perlu
+            // _controller.runJavaScript('document.body.style.backgroundColor = "red";');
+          },
+          onWebResourceError: (WebResourceError error) {
+            if (mounted) {
+              setState(() {
+                _isLoadingPage = false;
+                _errorMessage = '''
+Page could not be loaded.
+Error code: ${error.errorCode}
+Description: ${error.description}
+URL: ${error.url ?? 'N/A'}
+''';
+              });
+            }
+            print('''
+Page resource error:
+  code: ${error.errorCode}
+  description: ${error.description}
+  errorType: ${error.errorType}
+  isForMainFrame: ${error.isForMainFrame}
+  url: ${error.url}
+          ''');
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            // Anda bisa memblokir navigasi ke URL tertentu jika perlu
+            // if (request.url.startsWith('https://www.youtube.com/')) {
+            //   print('blocking navigation to $request}');
+            //   return NavigationDecision.prevent;
+            // }
+            print('allowing navigation to ${request.url}');
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(_geminiWebsiteUrl)); // Muat URL awal
   }
 
   @override
@@ -97,69 +91,93 @@ Jawaban Anda (terkait Pancasila atau pesan penolakan):
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tanya AI Pancasila'),
+        title: const Text('Asisten AI Gemini'), // Judul lebih relevan
         backgroundColor: theme.colorScheme.primaryContainer,
+        actions: [
+          // Tombol Refresh untuk WebView
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              _controller.reload();
+            },
+          ),
+          // Tombol untuk kembali dan maju dalam histori WebView (opsional)
+          // IconButton(
+          //   icon: const Icon(Icons.arrow_back_ios_new), // Ikon yang lebih modern
+          //   tooltip: 'Kembali',
+          //   onPressed: () async {
+          //     if (await _controller.canGoBack()) {
+          //       await _controller.goBack();
+          //     } else {
+          //       if (mounted) {
+          //         ScaffoldMessenger.of(context).showSnackBar(
+          //           const SnackBar(content: Text('Tidak ada halaman sebelumnya')),
+          //         );
+          //       }
+          //     }
+          //   },
+          // ),
+          // IconButton(
+          //   icon: const Icon(Icons.arrow_forward_ios),
+          //   tooltip: 'Maju',
+          //   onPressed: () async {
+          //     if (await _controller.canGoForward()) {
+          //       await _controller.goForward();
+          //     } else {
+          //        if (mounted) {
+          //         ScaffoldMessenger.of(context).showSnackBar(
+          //           const SnackBar(content: Text('Tidak ada halaman selanjutnya')),
+          //         );
+          //       }
+          //     }
+          //   },
+          // ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              'Ajukan pertanyaan Anda seputar Pancasila kepada Asisten AI kami!',
-              style: theme.textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _textController,
-              decoration: InputDecoration(
-                hintText: 'Contoh: Apa makna sila pertama?',
-                labelText: 'Pertanyaan Anda',
-                border: const OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: _isLoading
-                      ? const SizedBox(width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2.0))
-                      : const Icon(Icons.send),
-                  onPressed: _isLoading ? null : () {
-                    _askGemini(_textController.text);
-                    FocusScope.of(context).unfocus(); // Sembunyikan keyboard
-                  },
+      body: Stack(
+        children: [
+          if (_errorMessage.isNotEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, color: Colors.red, size: 50),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Gagal Memuat Halaman',
+                      style: theme.textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _errorMessage,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _isLoadingPage = true; // Set loading agar indikator muncul
+                          _errorMessage = '';
+                        });
+                        _controller.loadRequest(Uri.parse(_geminiWebsiteUrl)); // Coba muat ulang
+                      },
+                      child: const Text('Coba Lagi'),
+                    )
+                  ],
                 ),
               ),
-              onSubmitted: _isLoading ? null : _askGemini,
-              textInputAction: TextInputAction.send,
+            )
+          else
+            WebViewWidget(controller: _controller), // Widget WebView utama
+          if (_isLoadingPage && _errorMessage.isEmpty)
+            const Center(
+              child: CircularProgressIndicator(), // Indikator loading
             ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: _isLoading && _searchResult
-                  .isEmpty // Hanya tampilkan loading utama jika belum ada hasil
-                  ? const Center(child: CircularProgressIndicator())
-                  : _searchResult.isNotEmpty
-                  ? Container(
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: SingleChildScrollView(
-                  child: Text(
-                    _searchResult,
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                ),
-              )
-                  : Center(
-                  child: Text(
-                    'Jawaban AI akan muncul di sini.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600]),
-                    textAlign: TextAlign.center,
-                  )),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
