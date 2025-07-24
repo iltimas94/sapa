@@ -72,6 +72,7 @@ flutter:
     - assets/images/maskot_ceria.png
     - assets/images/maskot_senang.png
     - assets/images/maskot_semangat.png
+    - assets/images/maskot.png
     - assets/videos/garuda_pancasila.mp4
 
   # To add assets to your application, add an assets section, like this:
