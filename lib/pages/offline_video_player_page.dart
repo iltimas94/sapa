@@ -1,27 +1,25 @@
-// File: offline_video_player_page.dart
+// File: lib/pages/offline_video_player_page.dart
 import 'package:flutter/material.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:video_player/video_player.dart';
-import 'dart:io';
+import 'dart:io'; // Hanya diperlukan jika memuat dari file non-asset
 
-class SamplePlayer extends StatefulWidget {
+class OfflineVideoPlayerPage extends StatefulWidget { // Nama class diubah
   final String videoPath;
   final bool isAsset;
 
-  const SamplePlayer({
+  const OfflineVideoPlayerPage({ // Konstruktor diubah
     super.key,
     required this.videoPath,
     this.isAsset = false,
   });
 
   @override
-  State<SamplePlayer> createState() => _SamplePlayerState();
+  State<OfflineVideoPlayerPage> createState() => _OfflineVideoPlayerPageState(); // State diubah
 }
 
-class _SamplePlayerState extends State<SamplePlayer> {
+class _OfflineVideoPlayerPageState extends State<OfflineVideoPlayerPage> { // State diubah
   late FlickManager flickManager;
-  // VideoPlayerController akan dikelola oleh FlickManager karena autoInitialize = true
-
   bool _isLoading = true;
   String? _errorMessage;
 
@@ -35,42 +33,40 @@ class _SamplePlayerState extends State<SamplePlayer> {
     VideoPlayerController videoPlayerController;
 
     if (widget.isAsset) {
-      print("[SamplePlayer] Memuat video dari ASET: ${widget.videoPath}");
+      print("[OfflineVideoPlayerPage] Memuat video dari ASET: ${widget.videoPath}");
       videoPlayerController = VideoPlayerController.asset(widget.videoPath);
     } else if (widget.videoPath.startsWith('http://') || widget.videoPath.startsWith('https://')) {
-      print("[SamplePlayer] Memuat video dari URL: ${widget.videoPath}");
+      print("[OfflineVideoPlayerPage] Memuat video dari URL: ${widget.videoPath}");
       videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoPath));
     } else {
-      print("[SamplePlayer] Memuat video dari FILE: ${widget.videoPath}");
+      print("[OfflineVideoPlayerPage] Memuat video dari FILE: ${widget.videoPath}");
       videoPlayerController = VideoPlayerController.file(File(widget.videoPath));
     }
 
-    // Pasang listener SEBELUM membuat FlickManager dengan autoInitialize: true
     videoPlayerController.addListener(() {
-      if (!mounted) return; // Selalu cek mounted di dalam listener async
+      if (!mounted) return;
 
       final controllerValue = videoPlayerController.value;
 
       if (controllerValue.hasError) {
-        if (_errorMessage == null) { // Hanya set error jika belum ada (mencegah rebuild berlebih)
-          print("[SamplePlayer] Error pada VideoPlayerController: ${controllerValue.errorDescription}");
+        if (_errorMessage == null) {
+          print("[OfflineVideoPlayerPage] Error pada VideoPlayerController: ${controllerValue.errorDescription}");
           setState(() {
             _isLoading = false;
             _errorMessage = "Gagal memuat video: ${controllerValue.errorDescription}";
           });
         }
       } else if (controllerValue.isInitialized) {
-        if (_isLoading) { // Jika berhasil inisialisasi dan sebelumnya loading
-          print("[SamplePlayer] VideoPlayerController terinisialisasi.");
+        if (_isLoading) {
+          print("[OfflineVideoPlayerPage] VideoPlayerController terinisialisasi.");
           setState(() {
             _isLoading = false;
-            _errorMessage = null; // Pastikan error message di-clear jika berhasil setelah retry
+            _errorMessage = null;
           });
         }
       } else if (!controllerValue.isInitialized && _errorMessage == null) {
-        // Jika belum terinisialisasi, belum ada error, dan belum loading
         if (!_isLoading) {
-          print("[SamplePlayer] VideoPlayerController sedang memuat (dari listener)...");
+          print("[OfflineVideoPlayerPage] VideoPlayerController sedang memuat (dari listener)...");
           setState(() {
             _isLoading = true;
           });
@@ -82,52 +78,49 @@ class _SamplePlayerState extends State<SamplePlayer> {
       videoPlayerController: videoPlayerController,
       autoPlay: true,
       autoInitialize: true,
-      // Tidak ada errorCallback di FlickManager, error ditangani via listener controller di atas
     );
 
-    // Initial check (meskipun listener ada, kadang state awal perlu di-set)
-    // Jika controller sudah sync isInitialized atau hasError (jarang terjadi untuk video baru)
     if (videoPlayerController.value.isInitialized && _isLoading) {
-      print("[SamplePlayer] VideoPlayerController sudah terinisialisasi (pengecekan awal).");
-      setState(() {
-        _isLoading = false;
-      });
+      print("[OfflineVideoPlayerPage] VideoPlayerController sudah terinisialisasi (pengecekan awal).");
+      if(mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     } else if (videoPlayerController.value.hasError && _errorMessage == null) {
-      print("[SamplePlayer] Error pada VideoPlayerController (pengecekan awal): ${videoPlayerController.value.errorDescription}");
-      setState(() {
-        _isLoading = false;
-        _errorMessage = "Gagal memuat video: ${videoPlayerController.value.errorDescription}";
-      });
+      print("[OfflineVideoPlayerPage] Error pada VideoPlayerController (pengecekan awal): ${videoPlayerController.value.errorDescription}");
+      if(mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = "Gagal memuat video: ${videoPlayerController.value.errorDescription}";
+        });
+      }
     } else if (!videoPlayerController.value.isInitialized && !videoPlayerController.value.hasError && !_isLoading) {
-      // Jika belum siap dan tidak error, pastikan _isLoading true
-      print("[SamplePlayer] VideoPlayerController sedang memuat (pengecekan awal)...");
-      setState(() {
-        _isLoading = true;
-      });
+      print("[OfflineVideoPlayerPage] VideoPlayerController sedang memuat (pengecekan awal)...");
+      if(mounted) {
+        setState(() {
+          _isLoading = true;
+        });
+      }
     }
   }
 
   void _retryInitialization() {
-    print("[SamplePlayer] Mencoba memuat ulang video...");
+    print("[OfflineVideoPlayerPage] Mencoba memuat ulang video...");
     if (mounted) {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
       });
     }
-    // Penting: Dispose FlickManager lama sebelum membuat yang baru untuk menghindari kebocoran resource
-    // dan memastikan controller video baru yang digunakan.
-    // flickManager.dispose() akan otomatis men-dispose videoPlayerController yang terkait dengannya.
     flickManager.dispose();
-    _initializePlayer(); // Panggil lagi untuk membuat controller dan FlickManager baru
+    _initializePlayer();
   }
 
   @override
   void dispose() {
-    // FlickManager akan men-dispose VideoPlayerController yang di-pass ke dalamnya.
-    // Tidak perlu dispose videoPlayerController secara manual di sini jika sudah di-pass ke FlickManager.
     flickManager.dispose();
-    print("[SamplePlayer] FlickManager disposed.");
+    print("[OfflineVideoPlayerPage] FlickManager disposed.");
     super.dispose();
   }
 
@@ -172,7 +165,7 @@ class _SamplePlayerState extends State<SamplePlayer> {
           ),
         )
             : _isLoading
-            ? const Column( // Membuat tampilan loading lebih baik
+            ? const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(),
@@ -182,14 +175,16 @@ class _SamplePlayerState extends State<SamplePlayer> {
         )
             : FlickVideoPlayer(
           flickManager: flickManager,
-          // Anda bisa menambahkan UI kustom di sini jika perlu
-          // flickVideoWithControls: FlickVideoWithControls(
-          //   controls: FlickPortraitControls(),
-          //   videoFit: BoxFit.contain,
-          // ),
+          flickVideoWithControls: const FlickVideoWithControls(
+            videoFit: BoxFit.contain, // Agar video tidak terpotong
+            controls: FlickPortraitControls(), // Kontrol standar untuk portrait
+          ),
+          flickVideoWithControlsFullscreen: const FlickVideoWithControls(
+            videoFit: BoxFit.contain,
+            controls: FlickLandscapeControls(), // Kontrol untuk mode landscape/fullscreen
+          ),
         ),
       ),
     );
   }
 }
-

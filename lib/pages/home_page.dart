@@ -1,86 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dart:async'; // Diperlukan untuk Timer
-import 'dart:math';  // Diperlukan untuk Random
+import 'dart:async';
+import 'dart:math';
 
-// Asumsi halaman-halaman ini ada di proyek Anda
-import './quiz_page.dart';
-import './offline_video_player_page.dart';
-import './search_pancasila_page.dart';
-import './tanya_pancasila_ai_page.dart';
-
-// --- Widget Animasi Garuda Mengambang dari Kanan Bawah (FloatingActionButton kustom) ---
-class FloatingGarudaImage extends StatefulWidget {
-  final VoidCallback? onTap;
-
-  const FloatingGarudaImage({super.key, this.onTap});
-
-  @override
-  State<FloatingGarudaImage> createState() => _FloatingGarudaImageState();
-}
-
-class _FloatingGarudaImageState extends State<FloatingGarudaImage> {
-  double _bottomPosition = -100.0;
-  double _rightPosition = -100.0;
-  double _opacity = 0.0;
-  double _scale = 0.8;
-
-  @override
-  void initState() {
-    super.initState();
-    Timer(const Duration(milliseconds: 1200), () { // Penundaan lebih lama agar maskot memantul dulu
-      if (mounted) {
-        setState(() {
-          _bottomPosition = 20.0;
-          _rightPosition = 20.0;
-          _opacity = 1.0;
-          _scale = 1.0;
-        });
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 700),
-      curve: Curves.easeOutCubic,
-      bottom: _bottomPosition,
-      right: _rightPosition,
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 600),
-        opacity: _opacity,
-        curve: Curves.easeIn,
-        child: AnimatedScale(
-          duration: const Duration(milliseconds: 700),
-          scale: _scale,
-          curve: Curves.elasticOut,
-          child: GestureDetector(
-            onTap: widget.onTap,
-            child: Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 8,
-                      offset: const Offset(2, 2),
-                    )
-                  ]),
-              child: Image.asset(
-                'assets/images/garuda_pancasila.png', // Anda mungkin ingin maskot di sini atau garuda lain
-                height: 60,
-                errorBuilder: (context, error, stackTrace) =>
-                    Icon(Icons.flag_circle_rounded, size: 60, color: Colors.grey[350]),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+// Impor halaman-halaman yang sebenarnya
+import 'quiz_page.dart'; // Pastikan path ini benar jika file ada
+import 'offline_video_player_page.dart'; // Pastikan path ini benar
+import 'tanya_pancasila_ai_page.dart'; // Pastikan path ini benar
+// SearchPancasilaPage dihandle via named routes di main.dart, jadi tidak perlu import langsung di sini jika demikian
 
 // --- Widget Animasi Garuda di Header (Bernapas) ---
 class AnimatedHeaderGarudaImage extends StatefulWidget {
@@ -123,7 +49,7 @@ class _AnimatedHeaderGarudaImageState extends State<AnimatedHeaderGarudaImage>
     return ScaleTransition(
       scale: _scaleAnimation,
       child: Image.asset(
-        'assets/images/garuda_pancasila.png',
+        'assets/images/garuda_pancasila.png', // Pastikan path ini ada
         height: 80,
         errorBuilder: (context, error, stackTrace) =>
             Icon(Icons.flag_circle_rounded, size: 80, color: Colors.grey[350]),
@@ -132,17 +58,19 @@ class _AnimatedHeaderGarudaImageState extends State<AnimatedHeaderGarudaImage>
   }
 }
 
-// --- Widget Animasi Maskot Memantul ---
+// --- Widget Animasi Maskot Memantul dengan Fakta Menarik (AlertDialog) ---
 class BouncingMascotImage extends StatefulWidget {
   final String imagePath;
   final double mascotHeight;
   final double mascotWidth;
+  final List<String> funFacts;
 
   const BouncingMascotImage({
     super.key,
     required this.imagePath,
-    this.mascotHeight = 50.0,
-    this.mascotWidth = 50.0,
+    this.mascotHeight = 70.0,
+    this.mascotWidth = 70.0,
+    this.funFacts = const [],
   });
 
   @override
@@ -167,32 +95,29 @@ class _BouncingMascotImageState extends State<BouncingMascotImage>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(days: 99), // Durasi sangat panjang, hanya untuk ticker
+      duration: const Duration(days: 99),
     )..addListener(_updatePosition);
 
-    // Kecepatan awal diinisialisasi di sini, posisi setelah layout
     _initializeVelocities();
-    dx = 0; // Akan diupdate oleh LayoutBuilder
-    dy = 0; // Akan diupdate oleh LayoutBuilder
   }
 
   void _initializeVelocities() {
-    velocityX = (_random.nextBool() ? 1 : -1) * (_random.nextDouble() * 1.0 + 0.5); // Kecepatan lebih lambat
+    velocityX = (_random.nextBool() ? 1 : -1) * (_random.nextDouble() * 1.0 + 0.5);
     velocityY = (_random.nextBool() ? 1 : -1) * (_random.nextDouble() * 1.0 + 0.5);
   }
 
   void _initializePositionAndStart(BoxConstraints constraints) {
-    if (!_hasInitialized && mounted) { // Hanya inisialisasi sekali dan jika widget masih ada
+    if (!_hasInitialized && mounted) {
       _areaWidth = constraints.maxWidth;
       _areaHeight = constraints.maxHeight;
 
       if (_areaWidth > 0 && _areaHeight > 0) {
-        dx = _random.nextDouble() * (_areaWidth - widget.mascotWidth);
-        dy = _random.nextDouble() * (_areaHeight - widget.mascotHeight);
-        _hasInitialized = true; // Tandai bahwa inisialisasi selesai
+        dx = _random.nextDouble() * (_areaWidth - widget.mascotWidth).clamp(0.0, _areaWidth);
+        dy = _random.nextDouble() * (_areaHeight - widget.mascotHeight).clamp(0.0, _areaHeight);
+        _hasInitialized = true;
 
         if (!_animationController.isAnimating) {
-          _animationController.repeat(); // Mulai animasi
+          _animationController.repeat();
         }
       }
     }
@@ -223,6 +148,47 @@ class _BouncingMascotImageState extends State<BouncingMascotImage>
     });
   }
 
+  void _showRandomFunFactDialog() {
+    if (widget.funFacts.isNotEmpty && mounted) {
+      final fact = widget.funFacts[_random.nextInt(widget.funFacts.length)];
+      final theme = Theme.of(context);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+            title: Row(
+              children: [
+                Icon(Icons.lightbulb_outline_rounded, color: theme.colorScheme.primary, size: 28),
+                const SizedBox(width: 10),
+                Text(
+                  'Tahukah Kamu?',
+                  style: TextStyle(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            content: Text(
+              fact,
+              style: theme.textTheme.bodyLarge?.copyWith(height: 1.4),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Menarik!', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   void dispose() {
     _animationController.removeListener(_updatePosition);
@@ -234,32 +200,34 @@ class _BouncingMascotImageState extends State<BouncingMascotImage>
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Panggil _initializePositionAndStart di sini, aman karena LayoutBuilder
-        // akan memanggil ulang builder jika constraints berubah (meskipun kita hanya butuh saat pertama kali)
         if (!_hasInitialized && constraints.maxWidth > 0 && constraints.maxHeight > 0) {
-          // Jadwalkan agar dijalankan setelah build selesai untuk frame ini
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            _initializePositionAndStart(constraints);
+            if (mounted) {
+              _initializePositionAndStart(constraints);
+            }
           });
         }
 
         if (!_hasInitialized) {
-          return const SizedBox.shrink(); // Jangan tampilkan apa-apa sampai ukuran diketahui
+          return const SizedBox.shrink();
         }
 
-        return Stack( // Stack lokal untuk Positioned
+        return Stack(
           children: [
             Positioned(
               left: dx,
               top: dy,
-              child: Image.asset(
-                widget.imagePath,
-                height: widget.mascotHeight,
-                width: widget.mascotWidth,
-                errorBuilder: (context, error, stackTrace) => Icon(
-                    Icons.mood_bad_rounded,
-                    size: widget.mascotHeight,
-                    color: Colors.grey),
+              child: GestureDetector(
+                onTap: _showRandomFunFactDialog,
+                child: Image.asset(
+                  widget.imagePath,
+                  height: widget.mascotHeight,
+                  width: widget.mascotWidth,
+                  errorBuilder: (context, error, stackTrace) => Icon(
+                      Icons.mood_bad_rounded,
+                      size: widget.mascotHeight,
+                      color: Colors.grey),
+                ),
               ),
             ),
           ],
@@ -285,11 +253,25 @@ class MenuButtonInfo {
     this.iconData,
     this.backgroundColor,
     required this.onTap,
-  }) : assert(imageAssetPath != null || iconData != null);
+  }) : assert(imageAssetPath != null || iconData != null,
+  'Either imageAssetPath or iconData must be provided');
 }
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
+  static const List<String> _pancasilaFunFacts = [
+    "Pancasila dirumuskan oleh BPUPKI (Badan Penyelidik Usaha-usaha Persiapan Kemerdekaan Indonesia).",
+    "Hari Lahir Pancasila diperingati setiap tanggal 1 Juni, berdasarkan pidato Soekarno tahun 1945.",
+    "Lambang negara Garuda Pancasila dirancang oleh Sultan Hamid II dari Pontianak dan diresmikan pada tahun 1950.",
+    "Sila ke-3, 'Persatuan Indonesia', dilambangkan dengan pohon beringin yang memiliki akar tunggal panjang dan rindang.",
+    "Butir-butir pengamalan Pancasila pertama kali ditetapkan melalui Tap MPR No. II/MPR/1978.",
+    "Pancasila adalah dasar ideologi dan falsafah hidup bangsa Indonesia yang mempersatukan keragaman.",
+    "Nama 'Pancasila' berasal dari bahasa Sansekerta: 'pañca' berarti lima dan 'śīla' berarti prinsip atau asas.",
+    "Mohammad Yamin, Soepomo, dan Soekarno adalah tiga tokoh utama yang menyampaikan gagasan dasar negara pada sidang BPUPKI.",
+    "Piagam Jakarta (Jakarta Charter) yang dirumuskan pada 22 Juni 1945 memuat rumusan awal Pancasila dengan sila pertama yang sedikit berbeda.",
+    "Sila ke-5, 'Keadilan sosial bagi seluruh rakyat Indonesia', dilambangkan dengan padi dan kapas yang melambangkan pangan dan sandang."
+  ];
 
   Widget _buildMenuButton(
       BuildContext context, {
@@ -299,45 +281,69 @@ class HomePage extends StatelessWidget {
         IconData? iconData,
         Color? backgroundColor,
         required VoidCallback onTap,
+        required double circleDiameter,
       }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    Color iconContentColor = (backgroundColor?.computeLuminance() ?? (isDark ? 0.0 : 1.0)) > 0.5
-        ? Colors.black.withOpacity(0.75)
-        : Colors.white;
-    final textColor = isDark ? Colors.white.withOpacity(0.9) : Colors.black.withOpacity(0.8);
-    final effectiveBgColor = backgroundColor ?? theme.colorScheme.primaryContainer;
+
+    // Menentukan warna konten ikon/gambar berdasarkan luminansi background
+    // Jika background gelap, konten terang, begitu sebaliknya
+    Color iconContentColor = Colors.white; // Default untuk background berwarna
+    if (backgroundColor != null) {
+      iconContentColor = backgroundColor.computeLuminance() > 0.4 // Ambang batas bisa disesuaikan
+          ? Colors.black.withOpacity(0.75)
+          : Colors.white.withOpacity(0.9);
+    } else { // Jika tidak ada background color spesifik, gunakan skema tema
+      iconContentColor = isDark ? Colors.white.withOpacity(0.9) : Colors.black.withOpacity(0.75);
+    }
+
+
+    // Menentukan warna teks berdasarkan tema (terang/gelap) agar kontras dengan background utama halaman
+    final textColor = isDark ? Colors.white.withOpacity(0.95) : Colors.black.withOpacity(0.85);
+    final effectiveBgColor = backgroundColor ?? theme.colorScheme.primaryContainer.withOpacity(0.8); // Opacity untuk tombol menu
+
+    final double imageOrIconSize = circleDiameter * 0.75; // Ukuran gambar/ikon sedikit lebih kecil agar pas
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8.0),
+      borderRadius: BorderRadius.circular(8.0), // Radius untuk efek ripple
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: circleDiameter,
+              height: circleDiameter,
               decoration: BoxDecoration(
                 color: effectiveBgColor,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 3,
-                      offset: const Offset(0, 1.5))
+                      color: Colors.black.withOpacity(0.15), // Shadow lebih jelas sedikit
+                      blurRadius: 4,
+                      offset: const Offset(0, 2))
                 ],
               ),
-              child: imageAssetPath != null
-                  ? ClipOval(
-                  child: Image.asset(imageAssetPath,
-                      fit: BoxFit.cover,
-                      errorBuilder: (ctx, err, st) => Icon(
-                          Icons.broken_image_outlined,
-                          size: 28,
-                          color: iconContentColor.withOpacity(0.7))))
-                  : Icon(iconData, size: 28, color: iconContentColor),
+              child: Center(
+                child: imageAssetPath != null
+                    ? Image.asset(
+                  imageAssetPath,
+                  width: imageOrIconSize,
+                  height: imageOrIconSize,
+                  fit: BoxFit.contain,
+                  errorBuilder: (ctx, err, st) => Icon(
+                    Icons.broken_image_outlined,
+                    size: imageOrIconSize * 0.7,
+                    color: iconContentColor.withOpacity(0.7),
+                  ),
+                )
+                    : Icon(
+                  iconData,
+                  size: imageOrIconSize,
+                  color: iconContentColor,
+                ),
+              ),
             ),
             const SizedBox(height: 8.0),
             Padding(
@@ -346,7 +352,17 @@ class HomePage extends StatelessWidget {
                 title,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600, fontSize: 12, color: textColor),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    color: textColor, // Menggunakan textColor yang sudah disesuaikan
+                    shadows: [ // Shadow tipis untuk teks agar lebih terbaca di atas background ramai
+                      Shadow(
+                        blurRadius: 1.0,
+                        color: Colors.black.withOpacity(0.2),
+                        offset: const Offset(0.5, 0.5),
+                      ),
+                    ]
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -360,7 +376,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    const menuItemWidth = 80.0;
+    final isDark = theme.brightness == Brightness.dark;
+    const double menuItemWidth = 85.0; // Sedikit lebih lebar untuk spacing
+    final double circleMenuDiameter = menuItemWidth * 0.7;
 
     final List<MenuButtonInfo> allMenuButtons = [
       MenuButtonInfo(
@@ -368,7 +386,9 @@ class HomePage extends StatelessWidget {
           description: 'Info sila & butir.',
           imageAssetPath: 'assets/images/menu_search_pancasila.png',
           backgroundColor: const Color(0xFF42A5F5),
-          onTap: () => Navigator.pushNamed(context, '/searchPancasila')),
+          onTap: () {
+            Navigator.pushNamed(context, '/searchPancasila');
+          }),
       MenuButtonInfo(
           title: 'Kuis',
           description: 'Asah ilmumu.',
@@ -391,38 +411,39 @@ class HomePage extends StatelessWidget {
           onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const SamplePlayer(
+                  builder: (context) => const OfflineVideoPlayerPage(
                       videoPath: 'assets/videos/garuda_pancasila.mp4',
                       isAsset: true)))),
       MenuButtonInfo(
         title: 'Tentang',
-        description: 'Info SAPA Ceria.',
+        description: 'Info Sahabat Pancasila.',
         imageAssetPath: 'assets/images/menu_about.png',
         backgroundColor: const Color(0xFF66BB6A),
         onTap: () => showDialog(
           context: context,
-          builder: (ctx) => AlertDialog(
+          builder: (BuildContext dialogContext) => AlertDialog(
+            backgroundColor: theme.dialogBackgroundColor.withOpacity(0.95), // Dialog semi-transparan
             shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: Row(children: [
-              Icon(Icons.adb_rounded, color: theme.primaryColor),
+              Icon(Icons.info_outline_rounded, color: theme.colorScheme.primary),
               const SizedBox(width: 10),
-              const Text('Tentang SAPA Ceria')
+              Text('Tentang Sahabat Pancasila', style: TextStyle(color: theme.textTheme.titleLarge?.color))
             ]),
-            content: const SingleChildScrollView(
+            content: SingleChildScrollView(
                 child: ListBody(children: [
-                  Text('SAPA Ceria (Sahabat Pancasila Ceria)'),
-                  SizedBox(height: 8),
-                  Text('Versi 1.0.1 - Bouncing Mascot'),
-                  SizedBox(height: 8),
-                  Text('Belajar Pancasila dengan cara yang menyenangkan.'),
-                  SizedBox(height: 16),
-                  Text('Terima kasih! ❤️'),
+                  Text('Sahabat Pancasila', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textTheme.bodyMedium?.color)),
+                  const SizedBox(height: 8),
+                  Text('Versi 1.0.8 - Latar Belakang & Peningkatan UI', style: TextStyle(color: theme.textTheme.bodySmall?.color)), // Sesuaikan versi jika perlu
+                  const SizedBox(height: 8),
+                  Text('Belajar Pancasila dengan cara yang menyenangkan.', style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
+                  const SizedBox(height: 16),
+                  Text('Terima kasih! ❤️', style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
                 ])),
             actions: [
               TextButton(
-                  child: Text('Tutup', style: TextStyle(color: theme.primaryColor)),
-                  onPressed: () => Navigator.of(ctx).pop())
+                  child: Text('Tutup', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
+                  onPressed: () => Navigator.of(dialogContext).pop())
             ],
           ),
         ),
@@ -430,99 +451,134 @@ class HomePage extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      extendBodyBehindAppBar: true, // Membuat body bisa di belakang AppBar jika AppBar transparan
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('🎉 SAPA Ceria!!! 🥳'),
+            Text(
+              'Sahabat Pancasila',
+              style: TextStyle(
+                  color: isDark ? Colors.white.withOpacity(0.9) : Colors.black.withOpacity(0.8), // Warna judul AppBar
+                  fontWeight: FontWeight.bold,
+                  shadows: [ // Shadow tipis untuk teks AppBar
+                    Shadow(
+                      blurRadius: 1.5,
+                      color: Colors.black.withOpacity(0.25),
+                      offset: const Offset(1, 1),
+                    ),
+                  ]
+              ),
+            ),
             const SizedBox(width: 8),
             Image.asset('assets/images/maskot_ceria.png', height: 35,
                 errorBuilder: (ctx, err, st) => const SizedBox.shrink()),
           ],
         ),
-        centerTitle: true, // Untuk memastikan judul benar-benar di tengah
+        centerTitle: true,
+        backgroundColor: Colors.transparent, // AppBar dibuat transparan
+        elevation: 0, // Menghilangkan shadow bawaan AppBar
+        scrolledUnderElevation: 0, // Menghilangkan shadow saat di-scroll jika ada konten di bawahnya
       ),
-      body: Stack(
-        children: [
-          // Layer 0: Konten utama halaman (Scrollable)
-          SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 82), // Padding bawah lebih besar untuk FloatingGarudaImage
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 20.0, horizontal: 10.0),
-                  child: Column(children: [
-                    const AnimatedHeaderGarudaImage(),
-                    const SizedBox(height: 16),
-                    Text('Pendidikan Pancasila',
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                            fontSize: 20),
-                        textAlign: TextAlign.center),
-                    const SizedBox(height: 6),
-                    Text('Yuk, belajar Pancasila dengan seru bersama SAPA!',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.textTheme.bodyMedium?.color
-                                ?.withOpacity(0.8),
-                            fontSize: 14),
-                        textAlign: TextAlign.center),
-                  ]),
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: Text('Pilih Fitur',
-                      style: theme.textTheme.titleLarge
-                          ?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
-                      textAlign: TextAlign.center),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Wrap(
-                    spacing: 8.0,
-                    runSpacing: 12.0,
-                    alignment: WrapAlignment.center,
-                    children: allMenuButtons.map((item) => SizedBox(
-                      width: menuItemWidth,
-                      child: _buildMenuButton(context,
-                          title: item.title,
-                          description: item.description,
-                          imageAssetPath: item.imageAssetPath,
-                          iconData: item.iconData,
-                          backgroundColor: item.backgroundColor,
-                          onTap: item.onTap),
-                    )).toList(),
-                  ),
-                ),
-                // SizedBox tambahan di akhir konten scrollable jika diperlukan
-                // agar tidak tertutup oleh elemen Stack di atasnya saat di-scroll ke bawah
-                const SizedBox(height: 60),
-              ],
-            ),
+      body: Container(
+        width: double.infinity, // Memastikan Container mengisi seluruh lebar
+        height: double.infinity, // Memastikan Container mengisi seluruh tinggi
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: const AssetImage("assets/images/app_background.png"), // GANTI DENGAN NAMA FILE GAMBAR ANDA
+            fit: BoxFit.cover,
+            // Opsional: Tambahkan colorFilter untuk menggelapkan/mencerahkan background
+            // colorFilter: ColorFilter.mode(
+            //   Colors.black.withOpacity(0.3), // 0.0 (original) - 1.0 (hitam penuh)
+            //   BlendMode.darken, // atau BlendMode.lighten, BlendMode.dstATop, dll.
+            // ),
           ),
+        ),
+        child: SafeArea( // SafeArea agar konten tidak tertutup notch atau area sistem lainnya
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 92), // Padding lebih konsisten
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    SizedBox(height: kToolbarHeight + 10), // Memberi ruang untuk AppBar transparan
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+                      decoration: BoxDecoration(
+                        color: theme.cardColor.withOpacity(0.88), // Opacity disesuaikan
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.12),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Column(children: [
+                        const AnimatedHeaderGarudaImage(),
+                        const SizedBox(height: 16),
+                        Text('Pendidikan Pancasila',
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
+                                fontSize: 21, // Sedikit lebih besar
+                                shadows: [
+                                  Shadow(blurRadius: 1.0, color: Colors.black.withOpacity(0.15), offset: const Offset(0.5,0.5)),
+                                ]
+                            ),
+                            textAlign: TextAlign.center),
+                        const SizedBox(height: 8),
+                        Text(
+                            'Yuk, belajar Pancasila dengan seru bersama Sahabat Pancasila!',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                                color: (isDark ? Colors.white.withOpacity(0.9) : Colors.black.withOpacity(0.75)),
+                                fontSize: 14.5, // Sedikit lebih besar
+                                height: 1.3,
+                                shadows: [
+                                  Shadow(blurRadius: 1.0, color: Colors.black.withOpacity(0.1), offset: const Offset(0.5,0.5)),
+                                ]
+                            ),
+                            textAlign: TextAlign.center),
+                      ]),
+                    ),
+                    const SizedBox(height: 28),
 
-          // Layer 1: Maskot yang memantul (menutupi seluruh area Stack)
-          // Widget ini akan mengambil seluruh ruang yang tersedia di Stack karena tidak ada batasan Positioned.
-          const BouncingMascotImage(
-            imagePath: 'assets/images/maskot.png', // Pastikan path ini benar
-            mascotHeight: 45, // Ukuran bisa disesuaikan
-            mascotWidth: 45,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Wrap(
+                        spacing: 10.0, // Spasi antar item
+                        runSpacing: 14.0, // Spasi antar baris
+                        alignment: WrapAlignment.center,
+                        children: allMenuButtons.map((item) => SizedBox(
+                          width: menuItemWidth,
+                          child: _buildMenuButton(context,
+                              title: item.title,
+                              description: item.description,
+                              imageAssetPath: item.imageAssetPath,
+                              iconData: item.iconData,
+                              backgroundColor: item.backgroundColor,
+                              onTap: item.onTap,
+                              circleDiameter: circleMenuDiameter
+                          ),
+                        )).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 80),
+                  ],
+                ),
+              ),
+              const BouncingMascotImage(
+                imagePath: 'assets/images/maskot.png', // Pastikan path benar
+                mascotHeight: 70,
+                mascotWidth: 70,
+                funFacts: _pancasilaFunFacts,
+              ),
+            ],
           ),
-
-          // Layer 2: Garuda di pojok kanan bawah (di atas maskot dan konten)
-          FloatingGarudaImage(
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('SAPA Ceria menyapamu! 👋'), duration: Duration(seconds: 2)),
-              );
-            },
-          ),
-        ],
+        ),
       ),
     );
   }

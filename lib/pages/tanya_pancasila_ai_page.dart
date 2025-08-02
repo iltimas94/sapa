@@ -10,172 +10,150 @@ class TanyaPancasilaAiPage extends StatefulWidget {
 
 class _TanyaPancasilaAiPageState extends State<TanyaPancasilaAiPage> {
   late final WebViewController _controller;
-  bool _isLoadingPage = true;
-  String _errorMessage = '';
+  bool _isLoading = true;
+  String? _loadError;
 
-  // URL website Gemini yang ingin ditampilkan
-  final String _geminiWebsiteUrl = 'https://gemini.google.com/app';
-  // Pertimbangkan untuk menambahkan parameter bahasa jika perlu, misal:
-  // final String _geminiWebsiteUrl = 'https://gemini.google.com/app?hl=id';
+  // URL dasar Gemini, tambahkan parameter untuk bahasa Indonesia jika diinginkan
+  // Contoh: https://gemini.google.com/?hl=id (untuk bahasa Indonesia)
+  final String _geminiWebsiteUrl = 'https://gemini.google.com/app?hl=id';
+  // Atau jika Anda ingin langsung ke prompt tertentu:
+  // final String _geminiWebsiteUrl = 'https://gemini.google.com/app/new-chat?q=Jelaskan%20tentang%20Pancasila&hl=id';
 
   @override
   void initState() {
     super.initState();
 
     _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted) // Izinkan JavaScript
-      ..setBackgroundColor(const Color(0x00000000)) // Transparan jika perlu, atau warna lain
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000)) // Transparan jika diinginkan
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
             // Update loading bar.
-            // Anda bisa menambahkan indikator progres kustom di sini
-            print('WebView is loading (progress : $progress%)');
+            // Tidak perlu setState jika tidak ada UI progress bar khusus di sini
+            if (progress == 100 && _isLoading && mounted) {
+              setState(() {
+                _isLoading = false;
+                _loadError = null; // Hapus error jika berhasil load
+              });
+            }
           },
           onPageStarted: (String url) {
             if (mounted) {
               setState(() {
-                _isLoadingPage = true;
-                _errorMessage = ''; // Reset error message
+                _isLoading = true;
+                _loadError = null;
               });
             }
-            print('Page started loading: $url');
           },
           onPageFinished: (String url) {
             if (mounted) {
               setState(() {
-                _isLoadingPage = false;
+                _isLoading = false;
               });
             }
-            print('Page finished loading: $url');
-            // Anda bisa mencoba menyuntikkan JavaScript di sini jika perlu
-            // _controller.runJavaScript('document.body.style.backgroundColor = "red";');
           },
           onWebResourceError: (WebResourceError error) {
             if (mounted) {
               setState(() {
-                _isLoadingPage = false;
-                _errorMessage = '''
-Page could not be loaded.
-Error code: ${error.errorCode}
-Description: ${error.description}
-URL: ${error.url ?? 'N/A'}
-''';
+                _isLoading = false;
+                _loadError = "Gagal memuat halaman: ${error.description} (Kode: ${error.errorCode})";
+                // Anda bisa lebih spesifik menangani error di sini
+                // Misalnya, jika error.errorCode == -2 (host lookup), itu berarti tidak ada internet
+                if (error.errorCode == -2 || error.errorCode == -6) { // -2 (NAME_NOT_RESOLVED), -6 (CONNECTION_REFUSED)
+                  _loadError = "Tidak dapat terhubung ke server. Pastikan Anda memiliki koneksi internet yang stabil dan coba lagi.";
+                }
               });
+              print("WebView Error: ${error.description}, Code: ${error.errorCode}, URL: ${error.url}");
             }
-            print('''
-Page resource error:
-  code: ${error.errorCode}
-  description: ${error.description}
-  errorType: ${error.errorType}
-  isForMainFrame: ${error.isForMainFrame}
-  url: ${error.url}
-          ''');
           },
           onNavigationRequest: (NavigationRequest request) {
-            // Anda bisa memblokir navigasi ke URL tertentu jika perlu
+            // Anda bisa membatasi navigasi ke domain tertentu jika perlu
             // if (request.url.startsWith('https://www.youtube.com/')) {
-            //   print('blocking navigation to $request}');
             //   return NavigationDecision.prevent;
             // }
-            print('allowing navigation to ${request.url}');
             return NavigationDecision.navigate;
           },
         ),
       )
-      ..loadRequest(Uri.parse(_geminiWebsiteUrl)); // Muat URL awal
+      ..loadRequest(Uri.parse(_geminiWebsiteUrl));
+  }
+
+  Future<void> _reloadWebView() async {
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+        _loadError = null;
+      });
+    }
+    await _controller.reload();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Asisten AI Gemini'), // Judul lebih relevan
-        backgroundColor: theme.colorScheme.primaryContainer,
+        title: const Text('Tanya AI Pancasila'),
         actions: [
-          // Tombol Refresh untuk WebView
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              _controller.reload();
-            },
-          ),
-          // Tombol untuk kembali dan maju dalam histori WebView (opsional)
-          // IconButton(
-          //   icon: const Icon(Icons.arrow_back_ios_new), // Ikon yang lebih modern
-          //   tooltip: 'Kembali',
-          //   onPressed: () async {
-          //     if (await _controller.canGoBack()) {
-          //       await _controller.goBack();
-          //     } else {
-          //       if (mounted) {
-          //         ScaffoldMessenger.of(context).showSnackBar(
-          //           const SnackBar(content: Text('Tidak ada halaman sebelumnya')),
-          //         );
-          //       }
-          //     }
-          //   },
-          // ),
-          // IconButton(
-          //   icon: const Icon(Icons.arrow_forward_ios),
-          //   tooltip: 'Maju',
-          //   onPressed: () async {
-          //     if (await _controller.canGoForward()) {
-          //       await _controller.goForward();
-          //     } else {
-          //        if (mounted) {
-          //         ScaffoldMessenger.of(context).showSnackBar(
-          //           const SnackBar(content: Text('Tidak ada halaman selanjutnya')),
-          //         );
-          //       }
-          //     }
-          //   },
-          // ),
+          if (!_isLoading && _loadError == null) // Tampilkan tombol refresh hanya jika tidak loading dan tidak ada error
+            IconButton(
+              icon: const Icon(Icons.refresh_rounded),
+              onPressed: _reloadWebView,
+              tooltip: 'Muat Ulang',
+            ),
         ],
       ),
       body: Stack(
         children: [
-          if (_errorMessage.isNotEmpty)
+          if (_loadError != null)
             Center(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, color: Colors.red, size: 50),
-                    const SizedBox(height: 16),
+                    Image.asset(
+                      'assets/images/maskot_bingung.png',
+                      height: 100,
+                      errorBuilder: (ctx, err, st) =>
+                      const Icon(Icons.signal_wifi_off_rounded, size: 70, color: Colors.orangeAccent),
+                    ),
+                    const SizedBox(height: 20),
                     Text(
-                      'Gagal Memuat Halaman',
-                      style: theme.textTheme.headlineSmall,
+                      'Oops! Terjadi Kesalahan',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Text(
-                      _errorMessage,
+                      _loadError!,
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red.shade700),
                     ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _isLoadingPage = true; // Set loading agar indikator muncul
-                          _errorMessage = '';
-                        });
-                        _controller.loadRequest(Uri.parse(_geminiWebsiteUrl)); // Coba muat ulang
-                      },
-                      child: const Text('Coba Lagi'),
-                    )
+                    const SizedBox(height: 25),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: const Text('Coba Lagi'),
+                      onPressed: _reloadWebView,
+                    ),
                   ],
                 ),
               ),
             )
           else
-            WebViewWidget(controller: _controller), // Widget WebView utama
-          if (_isLoadingPage && _errorMessage.isEmpty)
+          // Hanya tampilkan WebView jika tidak ada error
+            WebViewWidget(controller: _controller),
+
+          if (_isLoading)
             const Center(
-              child: CircularProgressIndicator(), // Indikator loading
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 20),
+                  Text('Memuat AI Asisten...')
+                ],
+              ),
             ),
         ],
       ),
