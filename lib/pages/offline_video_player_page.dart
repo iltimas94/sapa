@@ -1,190 +1,350 @@
-// File: lib/pages/offline_video_player_page.dart
 import 'package:flutter/material.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:video_player/video_player.dart';
-import 'dart:io'; // Hanya diperlukan jika memuat dari file non-asset
+import 'dart:io'; // Untuk Platform.isIOS
 
-class OfflineVideoPlayerPage extends StatefulWidget { // Nama class diubah
-  final String videoPath;
-  final bool isAsset;
+// --- MODEL UNTUK INFORMASI VIDEO (TETAP DIPERLUKAN UNTUK JUDUL DAN THUMBNAIL) ---
+class AssetVideoInfo {
+  final String title;
+  final String assetPath;
+  final String? thumbnailAsset;
 
-  const OfflineVideoPlayerPage({ // Konstruktor diubah
-    super.key,
-    required this.videoPath,
-    this.isAsset = false,
+  const AssetVideoInfo({
+    required this.title,
+    required this.assetPath,
+    this.thumbnailAsset,
   });
+}
+// --- BATAS MODEL VIDEOINFO ---
+
+// --- DAFTAR LAGU NASIONAL DARI ASET ---
+final List<AssetVideoInfo> _assetNationalSongs = [
+  const AssetVideoInfo(
+    title: 'Garuda Pancasila',
+    assetPath: 'assets/videos/garuda_pancasila.mp4',
+    thumbnailAsset: 'assets/images/thumbnail_garuda_pancasila.png', // GANTI JIKA PERLU
+  ),
+  const AssetVideoInfo(
+    title: 'Indonesia Raya',
+    assetPath: 'assets/videos/indonesia_raya.mp4',
+    thumbnailAsset: 'assets/images/thumbnail_indonesia_raya.png', // GANTI JIKA PERLU
+  ),
+  const AssetVideoInfo(
+    title: 'Hari Merdeka (17 Agustus)',
+    assetPath: 'assets/videos/hari_merdeka.mp4',
+    thumbnailAsset: 'assets/images/thumbnail_hari_merdeka.png', // GANTI JIKA PERLU
+  ),
+];
+// --- BATAS DAFTAR LAGU NASIONAL ---
+
+class OfflineVideoPlayerPage extends StatefulWidget {
+  const OfflineVideoPlayerPage({super.key});
 
   @override
-  State<OfflineVideoPlayerPage> createState() => _OfflineVideoPlayerPageState(); // State diubah
+  State<OfflineVideoPlayerPage> createState() => _OfflineVideoPlayerPageState();
 }
 
-class _OfflineVideoPlayerPageState extends State<OfflineVideoPlayerPage> { // State diubah
-  late FlickManager flickManager;
-  bool _isLoading = true;
-  String? _errorMessage;
+class _OfflineVideoPlayerPageState extends State<OfflineVideoPlayerPage> {
+  FlickManager? _flickManager;
+  AssetVideoInfo? _selectedVideo; // Menggunakan AssetVideoInfo
+
+  bool _isLoadingPlayer = false;
+  String? _playerErrorMessage;
 
   @override
-  void initState() {
-    super.initState();
-    _initializePlayer();
+  void dispose() {
+    _flickManager?.dispose();
+    print("[VideoPlayerPage] FlickManager disposed on page dispose.");
+    super.dispose();
   }
 
-  void _initializePlayer() {
-    VideoPlayerController videoPlayerController;
+  void _initializePlayerForVideo(AssetVideoInfo video) {
+    if (!mounted) return;
 
-    if (widget.isAsset) {
-      print("[OfflineVideoPlayerPage] Memuat video dari ASET: ${widget.videoPath}");
-      videoPlayerController = VideoPlayerController.asset(widget.videoPath);
-    } else if (widget.videoPath.startsWith('http://') || widget.videoPath.startsWith('https://')) {
-      print("[OfflineVideoPlayerPage] Memuat video dari URL: ${widget.videoPath}");
-      videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoPath));
-    } else {
-      print("[OfflineVideoPlayerPage] Memuat video dari FILE: ${widget.videoPath}");
-      videoPlayerController = VideoPlayerController.file(File(widget.videoPath));
-    }
+    _flickManager?.dispose();
+    _flickManager = null;
+
+    setState(() {
+      _selectedVideo = video;
+      _isLoadingPlayer = true;
+      _playerErrorMessage = null;
+    });
+
+    print("[VideoPlayerPage] Loading video from ASSET: ${video.assetPath}");
+    final videoPlayerController = VideoPlayerController.asset(video.assetPath);
 
     videoPlayerController.addListener(() {
       if (!mounted) return;
-
       final controllerValue = videoPlayerController.value;
 
       if (controllerValue.hasError) {
-        if (_errorMessage == null) {
-          print("[OfflineVideoPlayerPage] Error pada VideoPlayerController: ${controllerValue.errorDescription}");
-          setState(() {
-            _isLoading = false;
-            _errorMessage = "Gagal memuat video: ${controllerValue.errorDescription}";
-          });
+        if (_playerErrorMessage == null) {
+          print("[VideoPlayerPage] VideoPlayerController error: ${controllerValue.errorDescription}");
+          if (mounted) {
+            setState(() {
+              _isLoadingPlayer = false;
+              _playerErrorMessage = "Gagal memuat video: ${controllerValue.errorDescription ?? 'Kesalahan tidak diketahui'}";
+            });
+          }
         }
       } else if (controllerValue.isInitialized) {
-        if (_isLoading) {
-          print("[OfflineVideoPlayerPage] VideoPlayerController terinisialisasi.");
-          setState(() {
-            _isLoading = false;
-            _errorMessage = null;
-          });
-        }
-      } else if (!controllerValue.isInitialized && _errorMessage == null) {
-        if (!_isLoading) {
-          print("[OfflineVideoPlayerPage] VideoPlayerController sedang memuat (dari listener)...");
-          setState(() {
-            _isLoading = true;
-          });
+        if (_isLoadingPlayer) {
+          print("[VideoPlayerPage] VideoPlayerController initialized.");
+          if (mounted) {
+            setState(() {
+              _isLoadingPlayer = false;
+              _playerErrorMessage = null;
+            });
+          }
         }
       }
     });
 
-    flickManager = FlickManager(
+    _flickManager = FlickManager(
       videoPlayerController: videoPlayerController,
       autoPlay: true,
       autoInitialize: true,
     );
 
-    if (videoPlayerController.value.isInitialized && _isLoading) {
-      print("[OfflineVideoPlayerPage] VideoPlayerController sudah terinisialisasi (pengecekan awal).");
-      if(mounted) {
+    // Pengecekan awal
+    if (videoPlayerController.value.isInitialized && _isLoadingPlayer) {
+      if (mounted) setState(() => _isLoadingPlayer = false);
+    } else if (videoPlayerController.value.hasError && _playerErrorMessage == null) {
+      if (mounted) {
         setState(() {
-          _isLoading = false;
-        });
-      }
-    } else if (videoPlayerController.value.hasError && _errorMessage == null) {
-      print("[OfflineVideoPlayerPage] Error pada VideoPlayerController (pengecekan awal): ${videoPlayerController.value.errorDescription}");
-      if(mounted) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = "Gagal memuat video: ${videoPlayerController.value.errorDescription}";
-        });
-      }
-    } else if (!videoPlayerController.value.isInitialized && !videoPlayerController.value.hasError && !_isLoading) {
-      print("[OfflineVideoPlayerPage] VideoPlayerController sedang memuat (pengecekan awal)...");
-      if(mounted) {
-        setState(() {
-          _isLoading = true;
+          _isLoadingPlayer = false;
+          _playerErrorMessage = "Gagal memuat video awal: ${videoPlayerController.value.errorDescription ?? 'Kesalahan tidak diketahui'}";
         });
       }
     }
   }
 
   void _retryInitialization() {
-    print("[OfflineVideoPlayerPage] Mencoba memuat ulang video...");
-    if (mounted) {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
+    if (_selectedVideo != null) {
+      print("[VideoPlayerPage] Retrying to load video: ${_selectedVideo!.title}");
+      _initializePlayerForVideo(_selectedVideo!);
+    } else {
+      _clearSelectedVideo();
     }
-    flickManager.dispose();
-    _initializePlayer();
   }
 
-  @override
-  void dispose() {
-    flickManager.dispose();
-    print("[OfflineVideoPlayerPage] FlickManager disposed.");
-    super.dispose();
+  void _clearSelectedVideo() {
+    _flickManager?.dispose();
+    _flickManager = null;
+    if (mounted) {
+      setState(() {
+        _selectedVideo = null;
+        _playerErrorMessage = null;
+        _isLoadingPlayer = false;
+      });
+    }
+  }
+
+  Widget _buildVideoPlayerScreen(BuildContext context) {
+    final theme = Theme.of(context);
+
+    if (_playerErrorMessage != null) {
+      return _buildErrorWidget(theme, _playerErrorMessage!);
+    }
+    if (_isLoadingPlayer) {
+      return _buildLoadingWidget(theme, _selectedVideo?.title ?? 'Lagu');
+    }
+    if (_flickManager != null) {
+      return FlickVideoPlayer(
+        flickManager: _flickManager!,
+        flickVideoWithControls: const FlickVideoWithControls(
+          videoFit: BoxFit.contain,
+          controls: FlickPortraitControls(),
+        ),
+        flickVideoWithControlsFullscreen: const FlickVideoWithControls(
+          videoFit: BoxFit.contain,
+          controls: FlickLandscapeControls(),
+        ),
+      );
+    }
+    // Fallback jika terjadi kondisi tidak terduga
+    WidgetsBinding.instance.addPostFrameCallback((_) => _clearSelectedVideo());
+    return const Center(child: Text("Silakan pilih video."));
+  }
+
+  Widget _buildVideoSelectionScreen(BuildContext context) {
+    final theme = Theme.of(context);
+
+    if (_assetNationalSongs.isEmpty) {
+      return _buildEmptyStateWidget(theme);
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+      itemCount: _assetNationalSongs.length,
+      itemBuilder: (context, index) {
+        final video = _assetNationalSongs[index];
+        bool hasThumbnail = video.thumbnailAsset != null && video.thumbnailAsset!.isNotEmpty;
+
+        return Card(
+          elevation: 3,
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12.0),
+            onTap: () => _initializePlayerForVideo(video),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                children: [
+                  Container(
+                    width: 80,
+                    height: 60,
+                    margin: const EdgeInsets.only(right: 16.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: hasThumbnail ? Colors.transparent : Colors.grey.shade200,
+                      image: hasThumbnail
+                          ? DecorationImage(
+                        image: AssetImage(video.thumbnailAsset!),
+                        fit: BoxFit.cover,
+                        onError: (exception, stackTrace) {
+                          print("Error loading thumbnail: ${video.thumbnailAsset} - $exception");
+                        },
+                      )
+                          : null,
+                    ),
+                    child: !hasThumbnail
+                        ? Center(child: Icon(Icons.music_video_rounded, size: 30, color: theme.colorScheme.primary.withOpacity(0.8)))
+                        : null,
+                  ),
+                  Expanded(
+                    child: Text(
+                      video.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(Icons.play_circle_fill_rounded, color: theme.colorScheme.primary, size: 32),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyStateWidget(ThemeData theme) {
+    // ... (fungsi ini bisa tetap sama atau disederhanakan jika Anda yakin daftar tidak akan pernah kosong)
+    // Untuk saat ini, saya biarkan sama untuk menangani kasus jika daftar _assetNationalSongs dikosongkan secara tidak sengaja.
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/images/maskot_bingung.png', height: 100),
+            const SizedBox(height: 20),
+            Text(
+              'Oops! Belum Ada Video Lagu',
+              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Daftar lagu nasional belum tersedia saat ini.',
+              style: theme.textTheme.bodyLarge?.copyWith(height: 1.4),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingWidget(ThemeData theme, String videoTitle) {
+    // ... (fungsi ini tetap sama)
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Text(
+              'Sedang memuat video "$videoTitle"...',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorWidget(ThemeData theme, String errorMessage) {
+    // ... (fungsi ini tetap sama)
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/maskot_sedih.png',
+              height: 100,
+              errorBuilder: (ctx, err, st) => const Icon(Icons.error_outline_rounded, color: Colors.red, size: 70),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Oops! Video Gagal Dimuat',
+              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              errorMessage,
+              style: theme.textTheme.bodyLarge?.copyWith(color: Colors.red.shade700, height: 1.4),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 28),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('COBA LAGI'),
+              onPressed: _retryInitialization,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                textStyle: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isAsset ? 'Video Lagu Nasional' : 'Video Player'),
-      ),
-      body: Center(
-        child: _errorMessage != null
-            ? Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, color: Colors.red, size: 60),
-              const SizedBox(height: 20),
-              Text(
-                'Oops! Terjadi Masalah',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                _errorMessage!,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.red.shade700),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 25),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.refresh),
-                label: const Text('Coba Lagi'),
-                onPressed: _retryInitialization,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-              )
-            ],
-          ),
+        title: Text(_selectedVideo == null ? 'Pilih Lagu Nasional' : _selectedVideo!.title),
+        leading: _selectedVideo != null
+            ? IconButton(
+          icon: Icon(Platform.isIOS ? Icons.arrow_back_ios_new_rounded : Icons.arrow_back_rounded),
+          tooltip: 'Kembali ke Daftar Lagu',
+          onPressed: _clearSelectedVideo,
         )
-            : _isLoading
-            ? const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 20),
-            Text('Memuat video...'),
-          ],
-        )
-            : FlickVideoPlayer(
-          flickManager: flickManager,
-          flickVideoWithControls: const FlickVideoWithControls(
-            videoFit: BoxFit.contain, // Agar video tidak terpotong
-            controls: FlickPortraitControls(), // Kontrol standar untuk portrait
-          ),
-          flickVideoWithControlsFullscreen: const FlickVideoWithControls(
-            videoFit: BoxFit.contain,
-            controls: FlickLandscapeControls(), // Kontrol untuk mode landscape/fullscreen
-          ),
-        ),
+            : null,
       ),
+      body: _selectedVideo == null
+          ? _buildVideoSelectionScreen(context)
+          : _buildVideoPlayerScreen(context),
     );
   }
 }

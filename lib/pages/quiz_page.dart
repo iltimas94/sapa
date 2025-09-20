@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/quiz_question.dart'; // Pastikan path ini benar
 
-// Enum untuk merepresentasikan mode kuis
-enum QuizMode { none, basic, advanced }
-
 class QuizPage extends StatefulWidget {
   const QuizPage({super.key});
 
@@ -15,87 +12,88 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
   late AnimationController _progressController;
   late Animation<double> _progressAnimation;
 
-  // Daftar pertanyaan untuk Kuis Biasa
+  // Daftar 10 pertanyaan Kuis Pancasila yang disesuaikan dengan materi Search Pancasila
   final List<QuizQuestion> _basicQuestions = [
     const QuizQuestion(
-      questionText: 'Apa bunyi sila pertama Pancasila?',
+      questionText: 'Bunyi sila pertama Pancasila adalah...',
       options: [
         'Kemanusiaan yang Adil dan Beradab',
-        'Ketuhanan Yang Maha Esa',
         'Persatuan Indonesia',
+        'Ketuhanan Yang Maha Esa',
         'Keadilan Sosial bagi Seluruh Rakyat Indonesia'
       ],
-      correctAnswerIndex: 1,
+      correctAnswerIndex: 2, // Ketuhanan Yang Maha Esa
     ),
     const QuizQuestion(
-      questionText: 'Lambang sila kedua Pancasila adalah...',
-      options: ['Bintang', 'Rantai Emas', 'Pohon Beringin', 'Padi dan Kapas'],
-      correctAnswerIndex: 1,
+      questionText: 'Lambang sila kedua Pancasila, yang melambangkan hubungan antarmanusia yang kuat, adalah...',
+      options: ['Bintang Tunggal', 'Pohon Beringin', 'Kepala Banteng', 'Rantai Emas'],
+      correctAnswerIndex: 3, // Rantai Emas
     ),
     const QuizQuestion(
-      questionText: 'Sikap yang sesuai dengan sila ketiga Pancasila adalah...',
+      questionText: 'Sikap "Mengikuti upacara bendera dengan khidmat" adalah contoh pengamalan sila ke...',
+      options: ['Sila ke-1', 'Sila ke-2', 'Sila ke-3', 'Sila ke-4'],
+      correctAnswerIndex: 2, // Sila ke-3 (Persatuan Indonesia)
+    ),
+    const QuizQuestion(
+      questionText: 'Menyelesaikan masalah bersama dengan berdiskusi atau musyawarah sesuai dengan sila keempat yang berlambang...',
+      options: ['Padi dan Kapas', 'Kepala Banteng', 'Bintang Tunggal', 'Rantai Emas'],
+      correctAnswerIndex: 1, // Kepala Banteng
+    ),
+    const QuizQuestion(
+      questionText: 'Padi dan Kapas sebagai lambang sila kelima melambangkan...',
       options: [
-        'Rajin beribadah',
-        'Menghormati teman yang berbeda suku',
-        'Suka menolong korban bencana',
-        'Bermusyawarah memilih ketua kelas'
+        'Kekuatan dan Keberanian',
+        'Persatuan dan Kesatuan',
+        'Makanan dan Pakaian (Kesejahteraan)',
+        'Cahaya Tuhan dan Harapan'
       ],
-      correctAnswerIndex: 1,
+      correctAnswerIndex: 2, // Makanan dan Pakaian (Kesejahteraan)
     ),
     const QuizQuestion(
-      questionText: 'Berapa jumlah sila dalam Pancasila?',
-      options: ['3', '4', '5', '6'],
-      correctAnswerIndex: 2,
+      questionText: 'Bekerja bersama-sama membersihkan kelas (piket kelas) adalah contoh dari sikap...',
+      options: ['Jujur', 'Disiplin', 'Gotong Royong', 'Menghargai Perbedaan'],
+      correctAnswerIndex: 2, // Gotong Royong
     ),
     const QuizQuestion(
-      questionText: 'Hari lahir Pancasila diperingati setiap tanggal...',
-      options: ['17 Agustus', '1 Juni', '2 Mei', '28 Oktober'],
-      correctAnswerIndex: 1,
+      questionText: 'Tidak mengejek teman yang berbeda warna kulit atau bahasa adalah cerminan dari sikap...',
+      options: [
+        'Cinta Tanah Air',
+        'Menghargai Perbedaan Teman',
+        'Jujur dan Bertanggung Jawab',
+        'Disiplin Waktu'
+      ],
+      correctAnswerIndex: 1, // Menghargai Perbedaan Teman
+    ),
+    const QuizQuestion(
+      questionText: 'Mengakui kesalahan jika berbuat salah dan tidak menyontek saat ujian adalah contoh sikap...',
+      options: ['Gotong Royong', 'Cinta Tanah Air', 'Saling Memaafkan', 'Jujur dan Bertanggung Jawab'],
+      correctAnswerIndex: 3, // Jujur dan Bertanggung Jawab
+    ),
+    const QuizQuestion(
+      questionText: 'Lambang "Bendera Merah Putih" sering dikaitkan dengan sikap...',
+      options: [
+        'Menjaga Kebersihan Lingkungan',
+        'Cinta Tanah Air Indonesia',
+        'Menghormati Orang yang Lebih Tua',
+        'Rajin Belajar'
+      ],
+      correctAnswerIndex: 1, // Cinta Tanah Air Indonesia
+    ),
+    const QuizQuestion(
+      questionText: 'Datang ke sekolah tepat waktu dan mengerjakan tugas sesuai jadwal adalah contoh dari sikap...',
+      options: ['Tidak Mudah Putus Asa', 'Berani Mengakui Kesalahan', 'Disiplin', 'Menjaga Fasilitas Umum'],
+      correctAnswerIndex: 2, // Disiplin
     ),
   ];
 
-  // Daftar pertanyaan untuk Kuis Lanjutan (buatlah pertanyaan yang lebih sulit)
-  final List<QuizQuestion> _advancedQuestions = [
-    const QuizQuestion(
-      questionText: 'Siapakah tokoh yang pertama kali mengusulkan nama "Pancasila" dalam sidang BPUPKI?',
-      options: ['Mohammad Yamin', 'Soepomo', 'Soekarno', 'Sutan Sjahrir'],
-      correctAnswerIndex: 2,
-    ),
-    const QuizQuestion(
-      questionText: 'Dalam Piagam Jakarta, sila pertama berbunyi "Ketuhanan dengan kewajiban menjalankan syariat Islam bagi pemeluk-pemeluknya". Kapan dan mengapa sila ini diubah?',
-      options: [
-        '17 Agustus 1945, atas usul golongan nasionalis',
-        '18 Agustus 1945, demi persatuan nasional setelah konsultasi dengan tokoh Indonesia Timur',
-        '22 Juni 1945, saat perumusan Piagam Jakarta itu sendiri',
-        '1 Juni 1945, saat pidato Soekarno'
-      ],
-      correctAnswerIndex: 1,
-    ),
-    const QuizQuestion(
-      questionText: 'Tap MPR manakah yang mencabut Tap MPR No. II/MPR/1978 tentang P4 (Pedoman Penghayatan dan Pengamalan Pancasila)?',
-      options: ['Tap MPR No. XVIII/MPR/1998', 'Tap MPR No. II/MPR/1999', 'Tap MPR No. VI/MPR/2000', 'Tap MPR No. I/MPR/2003'],
-      correctAnswerIndex: 0,
-    ),
-    const QuizQuestion(
-      questionText: 'Jumlah bulu pada masing-masing sayap Garuda Pancasila melambangkan...',
-      options: ['Tanggal proklamasi kemerdekaan (17)', 'Bulan proklamasi kemerdekaan (8)', 'Tahun proklamasi kemerdekaan (45)', 'Jumlah sila Pancasila (5)'],
-      correctAnswerIndex: 0,
-    ),
-    const QuizQuestion(
-      questionText: 'Pancasila sebagai "Philosophische Grondslag" berarti Pancasila sebagai...',
-      options: ['Dasar negara yang dinamis', 'Pandangan hidup bangsa', 'Filsafat dasar negara', 'Perjanjian luhur bangsa'],
-      correctAnswerIndex: 2,
-    ),
-  ];
-
-  List<QuizQuestion> _currentQuestions = []; // Akan diisi berdasarkan mode
-  QuizMode _quizMode = QuizMode.none; // Mode kuis saat ini
+  List<QuizQuestion> _currentQuestions = [];
   String _quizTitle = 'Kuis Pancasila';
 
   int _currentQuestionIndex = 0;
   int _score = 0;
   int? _selectedOptionIndex;
   bool _answered = false;
+  bool _quizStarted = false;
 
   @override
   void initState() {
@@ -104,41 +102,41 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    // _updateProgressAnimation akan dipanggil setelah mode dipilih
+    // Animasi progres diinisialisasi di sini, tetapi akan diupdate nilainya saat kuis dimulai
+    _progressAnimation = Tween<double>(begin: 0, end: 0).animate(_progressController);
   }
 
-  void _selectQuizMode(QuizMode mode) {
+  void _startQuiz() {
     if (!mounted) return;
+    // Mengacak urutan pertanyaan setiap kali kuis dimulai (opsional)
+    // List<QuizQuestion> shuffledQuestions = List.from(_basicQuestions)..shuffle();
+
     setState(() {
-      _quizMode = mode;
-      if (mode == QuizMode.basic) {
-        _currentQuestions = _basicQuestions;
-        _quizTitle = 'Kuis Pancasila (Biasa)';
-      } else if (mode == QuizMode.advanced) {
-        _currentQuestions = _advancedQuestions;
-        _quizTitle = 'Kuis Pancasila (Lanjutan)';
-      }
-      // Reset state kuis jika ada
+      _currentQuestions = List.from(_basicQuestions); // Gunakan _basicQuestions yang sudah diperbarui
+      // _currentQuestions = shuffledQuestions; // Jika ingin pertanyaan diacak
+      _quizTitle = 'Kuis Pancasila';
       _currentQuestionIndex = 0;
       _score = 0;
       _selectedOptionIndex = null;
       _answered = false;
-      _progressController.reset(); // Reset progress bar
-      _updateProgressAnimation(); // Mulai animasi progress bar
+      _quizStarted = true;
+      _progressController.reset();
+      _updateProgressAnimation();
     });
   }
 
   void _updateProgressAnimation() {
-    if (_currentQuestions.isEmpty) return; // Jangan update jika belum ada pertanyaan
+    if (_currentQuestions.isEmpty || !_quizStarted) return;
     double progressTarget = (_currentQuestionIndex + 1) / _currentQuestions.length;
+    // Pastikan _progressAnimation diinisialisasi ulang jika target berubah
     _progressAnimation = Tween<double>(
-      begin: _progressController.value,
+      begin: _progressController.value, // Mulai dari nilai progres saat ini
       end: progressTarget,
     ).animate(CurvedAnimation(
       parent: _progressController,
       curve: Curves.easeInOut,
     ));
-    _progressController.forward(from: 0.0);
+    _progressController.forward(from: 0.0); // Selalu mulai animasi dari awal untuk progres baru
   }
 
   void _answerQuestion(int selectedIndex) {
@@ -161,9 +159,11 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
             _currentQuestionIndex++;
             _selectedOptionIndex = null;
             _answered = false;
+            // _progressController.reset(); // Reset sebelum update berikutnya agar animasi berjalan mulus
             _updateProgressAnimation();
           });
         } else {
+          // Panggil _updateProgressAnimation sekali lagi untuk memastikan progress bar penuh
           _updateProgressAnimation();
           _showResultDialog();
         }
@@ -177,22 +177,22 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
     String subMessage;
     Color titleColor;
 
-    double scorePercentage = _currentQuestions.isNotEmpty ? _score / _currentQuestions.length : 0.0;
+    double scorePercentage = _currentQuestions.isNotEmpty ? (_score / _currentQuestions.length) : 0.0;
 
     if (scorePercentage >= 0.8) {
       titleMessage = '🎉 Luar Biasa, Kamu Hebat! 🎉';
       subMessage = 'Pemahamanmu tentang Pancasila sangat baik!';
-      maskotImage = 'assets/images/maskot_ceria.png'; // Pastikan path benar
+      maskotImage = 'assets/images/maskot.png';
       titleColor = Colors.green.shade700;
     } else if (scorePercentage >= 0.6) {
       titleMessage = '👍 Bagus, Tingkatkan Lagi! 👍';
       subMessage = 'Sudah cukup baik, teruslah belajar!';
-      maskotImage = 'assets/images/happy.png'; // Pastikan path benar
+      maskotImage = 'assets/images/happy.png';
       titleColor = Colors.blue.shade700;
     } else {
       titleMessage = '🤔 Coba Lagi Yuk!';
       subMessage = 'Jangan menyerah, ayo pelajari lagi!';
-      maskotImage = 'assets/images/maskot_semangat.png'; // Pastikan path benar
+      maskotImage = 'assets/images/maskot_semangat.png';
       titleColor = Colors.orange.shade700;
     }
 
@@ -255,17 +255,16 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(dialogContext).primaryColor,
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 30, vertical: 12), // Sedikit disesuaikan
+                    horizontal: 30, vertical: 12),
                 textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               child: const Text('COBA LAGI'),
               onPressed: () {
-                Navigator.of(dialogContext).pop(); // Tutup dialog
-                // Kembali ke pemilihan mode
+                Navigator.of(dialogContext).pop();
                 if (mounted) {
                   setState(() {
-                    _quizMode = QuizMode.none;
-                    _currentQuestions = [];
+                    _quizStarted = false;
+                    _currentQuestions = []; // Kosongkan agar _buildStartQuizScreen yang muncul
                     _currentQuestionIndex = 0;
                     _score = 0;
                     _selectedOptionIndex = null;
@@ -275,10 +274,10 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
                 }
               },
             ),
-            const SizedBox(width: 8), // Jarak antara tombol
+            const SizedBox(width: 8),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[300], // Warna berbeda untuk Selesai
+                backgroundColor: Colors.grey[300],
                 foregroundColor: Colors.black87,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 35, vertical: 12),
@@ -286,8 +285,8 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
               ),
               child: const Text('SELESAI'),
               onPressed: () {
-                Navigator.of(dialogContext).pop(); // Tutup dialog
-                Navigator.of(context).pop(); // Kembali ke halaman sebelumnya (HomePage)
+                Navigator.of(dialogContext).pop();
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -298,15 +297,15 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
 
   Color _getOptionColor(int optionIndex) {
     if (!_answered) {
-      return Colors.white;
+      return Colors.white; // Warna default sebelum menjawab
     }
     if (optionIndex == _currentQuestions[_currentQuestionIndex].correctAnswerIndex) {
-      return Colors.green.shade100;
+      return Colors.green.shade100; // Jawaban benar
     }
     if (optionIndex == _selectedOptionIndex) {
-      return Colors.red.shade100;
+      return Colors.red.shade100; // Jawaban salah yang dipilih
     }
-    return Colors.white;
+    return Colors.white; // Opsi lain yang tidak dipilih setelah menjawab
   }
 
   Border? _getOptionBorder(int optionIndex) {
@@ -341,7 +340,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Widget _buildQuizModeSelection(BuildContext context) {
+  Widget _buildStartQuizScreen(BuildContext context) {
     final theme = Theme.of(context);
     return Center(
       child: Padding(
@@ -351,21 +350,27 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Image.asset(
-              'assets/images/maskot_bertanya.png', // Ganti dengan gambar maskot yang relevan
+              'assets/images/maskot_bertanya.png',
               height: 150,
               errorBuilder: (context, error, stackTrace) =>
               const Icon(Icons.quiz_rounded, size: 100, color: Colors.grey),
             ),
             const SizedBox(height: 32),
             Text(
-              'Pilih Tingkat Kesulitan Kuis',
+              'Selamat Datang di Kuis Pancasila!',
               style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 8),
+            Text(
+              'Uji pemahamanmu tentang dasar negara kita.',
+              style: theme.textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
             ElevatedButton.icon(
-              icon: const Icon(Icons.school_outlined),
-              label: const Text('Kuis Biasa'),
+              icon: const Icon(Icons.play_arrow_rounded),
+              label: const Text('Mulai Kuis'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
@@ -373,20 +378,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
                 textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              onPressed: () => _selectQuizMode(QuizMode.basic),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.star_outline_rounded),
-              label: const Text('Kuis Lanjutan'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.secondary,
-                foregroundColor: theme.colorScheme.onSecondary,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              onPressed: () => _selectQuizMode(QuizMode.advanced),
+              onPressed: _startQuiz,
             ),
           ],
         ),
@@ -394,12 +386,14 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
     );
   }
 
+
   Widget _buildQuizInterface(BuildContext context) {
     final theme = Theme.of(context);
-    if (_currentQuestions.isEmpty) {
-      // Ini seharusnya tidak terjadi jika _quizMode bukan none,
-      // tapi sebagai fallback.
-      return const Center(child: Text("Memuat kuis..."));
+    if (_currentQuestions.isEmpty || _currentQuestionIndex >= _currentQuestions.length) {
+      if (!_quizStarted) {
+        return _buildStartQuizScreen(context);
+      }
+      return const Center(child: Text("Memuat pertanyaan..."));
     }
     final currentQuestion = _currentQuestions[_currentQuestionIndex];
 
@@ -418,7 +412,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
               child: Column(
                 children: [
                   Text(
-                    'Pertanyaan ${_currentQuestionIndex + 1}:',
+                    'Pertanyaan ${_currentQuestionIndex + 1}/${_currentQuestions.length}:', // Menampilkan jumlah total pertanyaan
                     style: theme.textTheme.titleMedium?.copyWith(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold),
@@ -436,8 +430,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 24.0),
           Image.asset(
-            // Ganti gambar maskot sesuai kebutuhan, mungkin berdasarkan jenis pertanyaan atau kesulitan
-            _quizMode == QuizMode.advanced ? 'assets/images/maskot_berpikir.png' : 'assets/images/maskot_ceria.png',
+            'assets/images/maskot_ceria.png',
             height: 100,
             errorBuilder: (context, error, stackTrace) =>
             const SizedBox(height: 100),
@@ -486,7 +479,7 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
                                   ? Colors.red.shade900
                                   : _answered && index == currentQuestion.correctAnswerIndex
                                   ? Colors.green.shade900
-                                  : Colors.black87, // Atau theme.textTheme.bodyLarge?.color
+                                  : Colors.black87,
                               fontSize: 16
                           ),
                         ),
@@ -514,8 +507,11 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_quizMode == QuizMode.none ? 'Pilih Kuis' : '$_quizTitle (${_currentQuestionIndex + 1}/${_currentQuestions.length})'),
-        bottom: _quizMode != QuizMode.none && _currentQuestions.isNotEmpty
+        title: Text(!_quizStarted || _currentQuestions.isEmpty
+            ? 'Kuis Pancasila'
+        // Menampilkan nomor pertanyaan saat ini dan total pertanyaan di AppBar jika kuis sudah dimulai
+            : '$_quizTitle (${_currentQuestionIndex + 1}/${_currentQuestions.length})'),
+        bottom: _quizStarted && _currentQuestions.isNotEmpty
             ? PreferredSize(
           preferredSize: const Size.fromHeight(6.0),
           child: AnimatedBuilder(
@@ -529,10 +525,10 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
             },
           ),
         )
-            : null, // Tidak ada progress bar jika belum memilih mode
+            : null,
       ),
-      body: _quizMode == QuizMode.none
-          ? _buildQuizModeSelection(context)
+      body: !_quizStarted
+          ? _buildStartQuizScreen(context)
           : _buildQuizInterface(context),
     );
   }

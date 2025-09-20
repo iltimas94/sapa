@@ -37,8 +37,6 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
         'Rajin berdoa sesuai agama masing-masing.',
         'Menghormati teman yang berbeda agama.',
         'Tidak mengganggu teman yang sedang beribadah.',
-        'Bersyukur atas semua pemberian Tuhan.',
-        'Menjaga ciptaan Tuhan, seperti tanaman dan hewan.',
       ],
     ),
     PancasilaTopic(
@@ -50,8 +48,6 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
         'Membantu teman yang kesusahan.',
         'Berbicara sopan kepada orang tua dan guru.',
         'Tidak membeda-bedakan teman.',
-        'Menjenguk teman yang sakit.',
-        'Berani membela teman yang diganggu.',
       ],
     ),
     PancasilaTopic(
@@ -63,8 +59,6 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
         'Berteman dengan siapa saja tanpa memandang suku atau daerah.',
         'Mengikuti upacara bendera dengan khidmat.',
         'Bangga menggunakan produk buatan Indonesia.',
-        'Menjaga kerukunan di rumah dan di sekolah.',
-        'Belajar bersama teman-teman dari berbagai daerah.',
       ],
     ),
     PancasilaTopic(
@@ -74,10 +68,8 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       lambang: 'Kepala Banteng',
       butirPengamalan: [
         'Menghargai pendapat teman saat berdiskusi.',
-        'Tidak memaksakan keinginan sendiri kepada orang lain.',
         'Menerima hasil keputusan bersama dengan lapang dada.',
         'Ikut serta dalam pemilihan ketua kelas.',
-        'Menyampaikan pendapat dengan sopan.',
       ],
     ),
     PancasilaTopic(
@@ -87,9 +79,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       lambang: 'Padi dan Kapas',
       butirPengamalan: [
         'Berbagi makanan dengan teman.',
-        'Tidak boros dan suka menabung.',
         'Menghargai hasil karya orang lain.',
-        'Suka bekerja keras dan tidak mudah menyerah.',
         'Memberi bantuan kepada yang membutuhkan.',
       ],
     ),
@@ -100,7 +90,6 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       description: 'Bintang emas bersudut lima melambangkan cahaya dari Tuhan untuk setiap manusia.',
       lambang: 'Bintang',
       butirPengamalan: [
-        'Cahaya bintang seperti petunjuk dari Tuhan.',
         'Kita harus selalu ingat kepada Tuhan.',
         'Berbuat baik adalah cara kita mengikuti cahaya Tuhan.',
         'Bintang juga berarti harapan agar Indonesia selalu terang.',
@@ -113,7 +102,6 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       butirPengamalan: [
         'Setiap mata rantai itu penting, seperti setiap orang penting.',
         'Kita harus saling tolong-menolong seperti rantai yang menyatu.',
-        'Ada rantai bulat (wanita) dan persegi (pria), semua sama pentingnya.',
         'Persahabatan yang kuat itu seperti rantai.',
       ],
     ),
@@ -125,7 +113,6 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
         'Pohon beringin itu kuat, seperti Indonesia yang kuat karena bersatu.',
         'Akar yang menjalar kemana-mana artinya Indonesia punya banyak suku tapi tetap satu.',
         'Kita semua bisa berlindung di bawah naungan Indonesia.',
-        'Menjaga persatuan itu seperti merawat pohon agar tetap kokoh.',
       ],
     ),
     PancasilaTopic(
@@ -133,7 +120,6 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       description: 'Banteng adalah hewan sosial yang suka berkumpul, melambangkan musyawarah untuk mengambil keputusan.',
       lambang: 'Kepala Banteng', // Duplikat dari sila ke-4, fokus arti lambang
       butirPengamalan: [
-        'Banteng suka berkumpul, kita juga harus suka berdiskusi.',
         'Saat berdiskusi, kita harus berani menyampaikan pendapat seperti banteng yang kuat.',
         'Keputusan bersama adalah hasil dari kekuatan bersama.',
         'Jangan takut berbeda pendapat saat musyawarah.',
@@ -147,7 +133,6 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
         'Semua orang berhak mendapatkan makanan dan pakaian yang cukup.',
         'Kita tidak boleh serakah, harus berbagi.',
         'Negara berusaha agar semua rakyatnya sejahtera.',
-        'Adil itu berarti semua kebutuhan dasar terpenuhi.',
       ],
     ),
     PancasilaTopic(
@@ -157,9 +142,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       butirPengamalan: [
         'Membersihkan kelas bersama-sama (piket kelas).',
         'Mengerjakan tugas kelompok dengan kompak.',
-        'Membantu guru membawa buku.',
         'Menjaga kebersihan lingkungan sekolah bersama.',
-        'Pekerjaan berat jadi ringan kalau dikerjakan bersama.',
       ],
     ),
     PancasilaTopic(
@@ -169,9 +152,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       butirPengamalan: [
         'Tidak mengejek teman yang berbeda warna kulit atau bahasa.',
         'Mau bermain dengan semua teman.',
-        'Belajar tentang budaya teman yang berbeda.',
         'Menghormati cara teman beribadah.',
-        'Perbedaan itu indah dan membuat Indonesia kaya.',
       ],
     ),
     PancasilaTopic(
@@ -179,11 +160,9 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       description: 'Berkata benar dan melakukan tugas dengan baik adalah sikap penting. Ini cerminan sila ke-1 dan ke-2.',
       lambang: 'Kejujuran',
       butirPengamalan: [
-        'Mengembalikan barang yang ditemukan kepada pemiliknya.',
         'Mengakui kesalahan jika berbuat salah.',
         'Mengerjakan PR sendiri dengan sungguh-sungguh.',
         'Tidak menyontek saat ujian.',
-        'Menepati janji kepada teman.',
       ],
     ),
     PancasilaTopic(
@@ -192,10 +171,8 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       lambang: 'Bendera Merah Putih',
       butirPengamalan: [
         'Menghormati bendera Merah Putih.',
-        'Menyanyikan lagu kebangsaan Indonesia Raya dengan semangat.',
         'Mempelajari sejarah Indonesia.',
         'Menjaga nama baik Indonesia.',
-        'Menggunakan produk dalam negeri.',
       ],
     ),
     PancasilaTopic(
@@ -205,8 +182,6 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       butirPengamalan: [
         'Datang ke sekolah tepat waktu.',
         'Mengerjakan tugas sesuai jadwal.',
-        'Membuang sampah pada tempatnya.',
-        'Antre dengan sabar.',
         'Mendengarkan guru saat menjelaskan pelajaran.',
       ],
     ),
@@ -219,9 +194,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       butirPengamalan: [
         'Tidak membuang sampah sembarangan.',
         'Ikut kerja bakti membersihkan lingkungan rumah atau sekolah.',
-        'Menyiram tanaman agar tidak layu.',
         'Menghemat penggunaan air.',
-        'Memberitahu orang dewasa jika melihat lingkungan kotor atau rusak.',
       ],
     ),
     PancasilaTopic(
@@ -230,9 +203,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       lambang: 'Memaafkan Damai',
       butirPengamalan: [
         'Minta maaf jika berbuat salah kepada teman atau keluarga.',
-        'Memaafkan teman yang tidak sengaja menyakiti hati kita.',
         'Tidak menyimpan dendam.',
-        'Belajar dari kesalahan agar tidak terulang.',
         'Berteman kembali setelah berselisih.',
       ],
     ),
@@ -244,8 +215,6 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
         'Berbicara dengan sopan kepada orang yang lebih tua.',
         'Mendengarkan nasihat orang tua dan guru.',
         'Membantu orang tua di rumah.',
-        'Menundukkan badan sedikit saat lewat di depan orang tua yang sedang duduk (jika sesuai budaya).',
-        'Tidak memotong pembicaraan orang tua.',
       ],
     ),
     PancasilaTopic(
@@ -255,9 +224,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       butirPengamalan: [
         'Mengerjakan PR dan tugas sekolah tepat waktu.',
         'Memperhatikan penjelasan guru di kelas.',
-        'Bertanya jika ada pelajaran yang tidak dimengerti.',
         'Membaca buku untuk menambah pengetahuan.',
-        'Tidak malas untuk belajar setiap hari.',
       ],
     ),
     PancasilaTopic(
@@ -267,9 +234,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       butirPengamalan: [
         'Tidak mencoret-coret tembok atau bangku taman.',
         'Menggunakan toilet sekolah dengan bersih.',
-        'Tidak merusak mainan di taman bermain.',
         'Membuang sampah pada tempatnya di area publik.',
-        'Melaporkan jika ada fasilitas umum yang rusak.',
       ],
     ),
     PancasilaTopic(
@@ -277,11 +242,9 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       description: 'Jika kita berbuat salah, lebih baik mengakuinya daripada berbohong. (Sila ke-1, Sila ke-2)',
       lambang: 'Berani Jujur',
       butirPengamalan: [
-        'Langsung minta maaf jika tidak sengaja merusak barang teman.',
         'Mengaku jika lupa mengerjakan PR.',
         'Tidak menyalahkan orang lain atas kesalahan sendiri.',
         'Menerima konsekuensi dari kesalahan yang dibuat.',
-        'Belajar untuk tidak mengulangi kesalahan yang sama.',
       ],
     ),
     PancasilaTopic(
@@ -291,9 +254,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       butirPengamalan: [
         'Mendengarkan ide teman saat menentukan permainan.',
         'Tidak memaksakan permainan yang kita mau saja.',
-        'Bergiliran memilih permainan atau peran.',
         'Bermain dengan adil dan tidak curang.',
-        'Mencari jalan tengah jika ada perbedaan pendapat.',
       ],
     ),
     PancasilaTopic(
@@ -301,9 +262,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       description: 'Hewan juga makhluk Tuhan yang perlu kita sayangi dan tolong jika mereka butuh bantuan. (Sila ke-1, Sila ke-2)',
       lambang: 'Sayang Hewan Tolong',
       butirPengamalan: [
-        'Memberi makan kucing atau anjing liar yang kelaparan (dengan hati-hati).',
         'Tidak menyakiti hewan.',
-        'Melaporkan kepada orang dewasa jika melihat hewan terluka.',
         'Memelihara hewan peliharaan dengan baik jika punya.',
         'Belajar tentang cara merawat hewan.',
       ],
@@ -316,8 +275,6 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
         'Mempelajari tarian atau lagu daerah.',
         'Mencoba makanan khas dari berbagai daerah di Indonesia.',
         'Mengenakan pakaian adat pada acara tertentu.',
-        'Menghargai pertunjukan seni budaya daerah.',
-        'Menceritakan keindahan budaya Indonesia kepada orang lain.',
       ],
     ),
     PancasilaTopic(
@@ -325,11 +282,9 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       description: 'Dalam belajar atau melakukan sesuatu, kadang kita gagal. Tapi kita tidak boleh menyerah. (Sila ke-5)',
       lambang: 'Semangat Pantang Menyerah',
       butirPengamalan: [
-        'Terus mencoba meskipun gagal saat mengerjakan soal matematika.',
+        'Terus mencoba meskipun gagal saat mengerjakan soal.',
         'Berlatih lagi jika kalah dalam perlombaan.',
         'Tidak takut mencoba hal baru yang sulit.',
-        'Meminta bantuan jika benar-benar kesulitan.',
-        'Percaya bahwa kita bisa berhasil dengan usaha.',
       ],
     ),
   ];
@@ -458,13 +413,43 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
               itemCount: _searchResults.length,
               itemBuilder: (context, index) {
                 final topic = _searchResults[index];
-                String initial = topic.lambang.isNotEmpty && topic.lambang.length < 3 ? topic.lambang.substring(0,1).toUpperCase() : topic.title.substring(0,1).toUpperCase();
-                if (topic.lambang.toLowerCase() == "bintang tunggal") initial = "B";
-                if (topic.lambang.toLowerCase() == "rantai emas") initial = "R";
-                if (topic.lambang.toLowerCase() == "pohon beringin") initial = "P";
-                if (topic.lambang.toLowerCase() == "kepala banteng") initial = "K";
-                if (topic.lambang.toLowerCase() == "padi dan kapas") initial = "PK";
-                // Anda bisa menambahkan logika inisial untuk lambang/kata kunci baru di sini jika perlu
+                // String initial = topic.lambang.isNotEmpty && topic.lambang.length < 3 ? topic.lambang.substring(0,1).toUpperCase() : topic.title.substring(0,1).toUpperCase();
+                // if (topic.lambang.toLowerCase() == "bintang tunggal") initial = "B";
+                // if (topic.lambang.toLowerCase() == "rantai emas") initial = "R";
+                // if (topic.lambang.toLowerCase() == "pohon beringin") initial = "P";
+                // if (topic.lambang.toLowerCase() == "kepala banteng") initial = "K";
+                // if (topic.lambang.toLowerCase() == "padi dan kapas") initial = "PK";
+                // Logika inisial teks di atas tidak lagi digunakan untuk CircleAvatar utama
+
+                // Tentukan path gambar berdasarkan topic.lambang
+                String imagePath;
+                switch (topic.lambang.toLowerCase()) {
+                  case 'bintang tunggal':
+                  case 'bintang': // Tambahkan variasi jika perlu
+                    imagePath = 'assets/images/sila 1.png';
+                    break;
+                  case 'rantai emas':
+                  case 'rantai':
+                    imagePath = 'assets/images/sila 2.png';
+                    break;
+                  case 'pohon beringin':
+                    imagePath = 'assets/images/sila 3.png';
+                    break;
+                  case 'kepala banteng':
+                    imagePath = 'assets/images/sila 4.png';
+                    break;
+                  case 'padi dan kapas':
+                    imagePath = 'assets/images/sila 5.png';
+                    break;
+                // Tambahkan case untuk lambang-lambang lainnya jika ada
+                // Contoh:
+                // case 'sayang hewan tolong':
+                //   imagePath = 'assets/images/lambang_sayang_hewan.png'; // Ganti dengan nama file yang sesuai
+                //   break;
+                  default:
+                  // Gambar default jika tidak ada lambang spesifik atau untuk topik umum
+                    imagePath = 'assets/images/lambang_default.png'; // Sediakan gambar default
+                }
 
                 return Card(
                   elevation: 2,
@@ -477,12 +462,41 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     leading: CircleAvatar(
-                      backgroundColor: theme.colorScheme.primary.withOpacity(0.15),
-                      child: Text(
-                        initial,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary),
+                      backgroundColor: theme.colorScheme.primary.withOpacity(0.05), // Mungkin ingin warna yang lebih netral
+                      // Hapus child Text
+                      // child: Text(
+                      //   initial,
+                      //   style: TextStyle(
+                      //       fontWeight: FontWeight.bold,
+                      //       color: theme.colorScheme.primary),
+                      // ),
+                      // Ganti dengan Image.asset
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0), // Beri sedikit padding jika perlu
+                        child: Image.asset(
+                          imagePath,
+                          fit: BoxFit.contain, // Atau BoxFit.cover, sesuaikan
+                          errorBuilder: (context, error, stackTrace) {
+                            // Fallback jika gambar gagal dimuat, bisa tampilkan inisial teks lagi atau ikon
+                            String fallbackInitial = topic.lambang.isNotEmpty && topic.lambang.length < 3
+                                ? topic.lambang.substring(0, 1).toUpperCase()
+                                : topic.title.substring(0, 1).toUpperCase();
+                            if (topic.lambang.toLowerCase() == "bintang tunggal") fallbackInitial = "B";
+                            if (topic.lambang.toLowerCase() == "rantai emas") fallbackInitial = "R";
+                            if (topic.lambang.toLowerCase() == "pohon beringin") fallbackInitial = "P";
+                            if (topic.lambang.toLowerCase() == "kepala banteng") fallbackInitial = "K";
+                            if (topic.lambang.toLowerCase() == "padi dan kapas") fallbackInitial = "PK";
+
+                            return Text(
+                              fallbackInitial,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18, // Sesuaikan ukuran font jika perlu
+                                color: theme.colorScheme.primary,
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                     title: Text(
@@ -492,7 +506,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
                           color: theme.colorScheme.primary),
                     ),
                     subtitle: Text(
-                      'Topik Utama: ${topic.lambang}', // Diubah sedikit agar lebih general
+                      'Topik Utama: ${topic.lambang}',
                       style: theme.textTheme.bodySmall
                           ?.copyWith(color: Colors.grey[700]),
                     ),
@@ -550,6 +564,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
                   ),
                 );
               },
+
             )
                 : Center( // Tampilan awal sebelum search
               child: Padding(

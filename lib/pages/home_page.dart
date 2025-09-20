@@ -95,14 +95,14 @@ class _BouncingMascotImageState extends State<BouncingMascotImage>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(days: 99),
+      duration: const Duration(days: 99), // Durasi sangat panjang untuk animasi kontinu
     )..addListener(_updatePosition);
 
     _initializeVelocities();
   }
 
   void _initializeVelocities() {
-    velocityX = (_random.nextBool() ? 1 : -1) * (_random.nextDouble() * 1.0 + 0.5);
+    velocityX = (_random.nextBool() ? 1 : -1) * (_random.nextDouble() * 1.0 + 0.5); // Kecepatan acak
     velocityY = (_random.nextBool() ? 1 : -1) * (_random.nextDouble() * 1.0 + 0.5);
   }
 
@@ -112,12 +112,13 @@ class _BouncingMascotImageState extends State<BouncingMascotImage>
       _areaHeight = constraints.maxHeight;
 
       if (_areaWidth > 0 && _areaHeight > 0) {
+        // Mulai dari posisi acak di dalam area yang valid
         dx = _random.nextDouble() * (_areaWidth - widget.mascotWidth).clamp(0.0, _areaWidth);
         dy = _random.nextDouble() * (_areaHeight - widget.mascotHeight).clamp(0.0, _areaHeight);
         _hasInitialized = true;
 
         if (!_animationController.isAnimating) {
-          _animationController.repeat();
+          _animationController.repeat(); // Mulai animasi
         }
       }
     }
@@ -130,6 +131,7 @@ class _BouncingMascotImageState extends State<BouncingMascotImage>
       dx += velocityX;
       dy += velocityY;
 
+      // Logika pantulan pada batas area
       if (dx <= 0) {
         dx = 0;
         velocityX = -velocityX;
@@ -200,14 +202,17 @@ class _BouncingMascotImageState extends State<BouncingMascotImage>
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        // Inisialisasi posisi dan mulai animasi setelah widget dibangun dan memiliki ukuran
         if (!_hasInitialized && constraints.maxWidth > 0 && constraints.maxHeight > 0) {
+          // Menggunakan addPostFrameCallback untuk memastikan constraints sudah final
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
+            if (mounted) { // Pastikan widget masih mounted sebelum memanggil setState
               _initializePositionAndStart(constraints);
             }
           });
         }
 
+        // Jika belum terinisialisasi, tampilkan SizedBox kosong agar tidak error
         if (!_hasInitialized) {
           return const SizedBox.shrink();
         }
@@ -244,7 +249,7 @@ class MenuButtonInfo {
   final String? imageAssetPath;
   final IconData? iconData;
   final Color? backgroundColor;
-  final VoidCallback onTap;
+  final VoidCallback onTap; // Perhatikan: onTap akan diubah untuk menangani konfirmasi AI
 
   MenuButtonInfo({
     required this.title,
@@ -273,6 +278,54 @@ class HomePage extends StatelessWidget {
     "Sila ke-5, 'Keadilan sosial bagi seluruh rakyat Indonesia', dilambangkan dengan padi dan kapas yang melambangkan pangan dan sandang."
   ];
 
+  // --- FUNGSI UNTUK DIALOG KONFIRMASI TANYA AI ---
+  Future<bool?> _showTanyaAiConfirmationDialog(BuildContext context) async {
+    final theme = Theme.of(context);
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // Pengguna harus memilih salah satu opsi
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+          title: Row(
+            children: [
+              Icon(Icons.help_outline_rounded, color: theme.colorScheme.primary),
+              const SizedBox(width: 10),
+              const Text('Konfirmasi Akses AI'),
+            ],
+          ),
+          content: const Text(
+            'Anda akan membuka fitur Tanya AI yang menggunakan layanan eksternal (Google Gemini) dan memerlukan koneksi internet. Lanjutkan?',
+            style: TextStyle(fontSize: 15, height: 1.4),
+          ),
+          actionsAlignment: MainAxisAlignment.end,
+          actions: <Widget>[
+            TextButton(
+              child: Text('Batal', style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w500)),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(false); // Mengembalikan false
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
+              child: const Text('Lanjutkan', style: TextStyle(fontWeight: FontWeight.bold)),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(true); // Mengembalikan true
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  // --- END FUNGSI DIALOG ---
+
+
   Widget _buildMenuButton(
       BuildContext context, {
         required String title,
@@ -286,27 +339,22 @@ class HomePage extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Menentukan warna konten ikon/gambar berdasarkan luminansi background
-    // Jika background gelap, konten terang, begitu sebaliknya
-    Color iconContentColor = Colors.white; // Default untuk background berwarna
+    Color iconContentColor = Colors.white;
     if (backgroundColor != null) {
-      iconContentColor = backgroundColor.computeLuminance() > 0.4 // Ambang batas bisa disesuaikan
+      iconContentColor = backgroundColor.computeLuminance() > 0.4
           ? Colors.black.withOpacity(0.75)
           : Colors.white.withOpacity(0.9);
-    } else { // Jika tidak ada background color spesifik, gunakan skema tema
+    } else {
       iconContentColor = isDark ? Colors.white.withOpacity(0.9) : Colors.black.withOpacity(0.75);
     }
 
-
-    // Menentukan warna teks berdasarkan tema (terang/gelap) agar kontras dengan background utama halaman
     final textColor = isDark ? Colors.white.withOpacity(0.95) : Colors.black.withOpacity(0.85);
-    final effectiveBgColor = backgroundColor ?? theme.colorScheme.primaryContainer.withOpacity(0.8); // Opacity untuk tombol menu
-
-    final double imageOrIconSize = circleDiameter * 0.75; // Ukuran gambar/ikon sedikit lebih kecil agar pas
+    final effectiveBgColor = backgroundColor ?? theme.colorScheme.primaryContainer.withOpacity(0.8);
+    final double imageOrIconSize = circleDiameter * 0.7; // Ukuran disesuaikan agar tidak terlalu besar
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8.0), // Radius untuk efek ripple
+      borderRadius: BorderRadius.circular(8.0),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),
         child: Column(
@@ -320,22 +368,23 @@ class HomePage extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black.withOpacity(0.15), // Shadow lebih jelas sedikit
+                      color: Colors.black.withOpacity(0.15),
                       blurRadius: 4,
                       offset: const Offset(0, 2))
                 ],
               ),
               child: Center(
                 child: imageAssetPath != null
-                    ? Image.asset(
-                  imageAssetPath,
-                  width: imageOrIconSize,
-                  height: imageOrIconSize,
-                  fit: BoxFit.contain,
-                  errorBuilder: (ctx, err, st) => Icon(
-                    Icons.broken_image_outlined,
-                    size: imageOrIconSize * 0.7,
-                    color: iconContentColor.withOpacity(0.7),
+                    ? Padding( // Tambahkan padding untuk gambar aset di dalam lingkaran
+                  padding: EdgeInsets.all(imageOrIconSize * 0.15), // 15% dari ukuran ikon
+                  child: Image.asset(
+                    imageAssetPath,
+                    fit: BoxFit.contain,
+                    errorBuilder: (ctx, err, st) => Icon(
+                      Icons.broken_image_outlined,
+                      size: imageOrIconSize * 0.7,
+                      color: iconContentColor.withOpacity(0.7),
+                    ),
                   ),
                 )
                     : Icon(
@@ -353,9 +402,9 @@ class HomePage extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                    color: textColor, // Menggunakan textColor yang sudah disesuaikan
-                    shadows: [ // Shadow tipis untuk teks agar lebih terbaca di atas background ramai
+                    fontSize: 12, // Ukuran font untuk judul menu
+                    color: textColor,
+                    shadows: [
                       Shadow(
                         blurRadius: 1.0,
                         color: Colors.black.withOpacity(0.2),
@@ -377,7 +426,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    const double menuItemWidth = 85.0; // Sedikit lebih lebar untuk spacing
+    const double menuItemWidth = 85.0;
     final double circleMenuDiameter = menuItemWidth * 0.7;
 
     final List<MenuButtonInfo> allMenuButtons = [
@@ -385,7 +434,7 @@ class HomePage extends StatelessWidget {
           title: 'Cari Sila',
           description: 'Info sila & butir.',
           imageAssetPath: 'assets/images/menu_search_pancasila.png',
-          backgroundColor: const Color(0xFF42A5F5),
+          backgroundColor: const Color(0xFF42A5F5), // Biru
           onTap: () {
             Navigator.pushNamed(context, '/searchPancasila');
           }),
@@ -393,52 +442,55 @@ class HomePage extends StatelessWidget {
           title: 'Kuis',
           description: 'Asah ilmumu.',
           imageAssetPath: 'assets/images/menu_quiz.png',
-          backgroundColor: const Color(0xFFFFCA28),
+          backgroundColor: const Color(0xFFFFCA28), // Kuning
           onTap: () => Navigator.push(context,
               MaterialPageRoute(builder: (context) => const QuizPage()))),
       MenuButtonInfo(
           title: 'Tanya AI',
           description: 'Seputar Pancasila.',
           imageAssetPath: 'assets/images/menu_ai_gemini.png',
-          backgroundColor: const Color(0xFFBA68C8),
-          onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const TanyaPancasilaAiPage()))),
+          backgroundColor: const Color(0xFFBA68C8), // Ungu
+          onTap: () async { // Jadikan onTap async untuk Tanya AI
+            final bool? confirm = await _showTanyaAiConfirmationDialog(context);
+            if (confirm == true && context.mounted) { // Periksa context.mounted sebelum navigasi
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const TanyaPancasilaAiPage()));
+            }
+          }),
       MenuButtonInfo(
           title: 'Lagu',
           description: 'Garuda Pancasila.',
           imageAssetPath: 'assets/images/menu_music.png',
-          backgroundColor: const Color(0xFFFFA726),
+          backgroundColor: const Color(0xFFFFA726), // Oranye
           onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const OfflineVideoPlayerPage(
-                      videoPath: 'assets/videos/garuda_pancasila.mp4',
-                      isAsset: true)))),
+                  builder: (context) => const OfflineVideoPlayerPage()))),
       MenuButtonInfo(
         title: 'Tentang',
         description: 'Info Sahabat Pancasila.',
         imageAssetPath: 'assets/images/menu_about.png',
-        backgroundColor: const Color(0xFF66BB6A),
+        backgroundColor: const Color(0xFF66BB6A), // Hijau
         onTap: () => showDialog(
           context: context,
           builder: (BuildContext dialogContext) => AlertDialog(
-            backgroundColor: theme.dialogBackgroundColor.withOpacity(0.95), // Dialog semi-transparan
+            backgroundColor: theme.dialogBackgroundColor.withOpacity(0.95),
             shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: Row(children: [
               Icon(Icons.info_outline_rounded, color: theme.colorScheme.primary),
               const SizedBox(width: 10),
-              Text('Tentang Sahabat Pancasila', style: TextStyle(color: theme.textTheme.titleLarge?.color))
+              Text('Tentang Sahabat Pancasila', style: TextStyle(color: theme.textTheme.titleLarge?.color, fontWeight: FontWeight.bold))
             ]),
             content: SingleChildScrollView(
                 child: ListBody(children: [
-                  Text('Sahabat Pancasila', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textTheme.bodyMedium?.color)),
+                  Text('Sahabat Pancasila', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textTheme.bodyMedium?.color)),
                   const SizedBox(height: 8),
                   Text('Versi 1.0.8 - Latar Belakang & Peningkatan UI', style: TextStyle(color: theme.textTheme.bodySmall?.color)), // Sesuaikan versi jika perlu
-                  const SizedBox(height: 8),
-                  Text('Belajar Pancasila dengan cara yang menyenangkan.', style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
+                  const SizedBox(height: 10),
+                  Text('Aplikasi edukasi untuk mengenalkan Pancasila kepada anak-anak dengan cara yang interaktif dan menyenangkan.', style: TextStyle(color: theme.textTheme.bodyMedium?.color, height: 1.4)),
                   const SizedBox(height: 16),
-                  Text('Terima kasih! ❤️', style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
+                  Text('Dikembangkan dengan ❤️ oleh Tim Sapa.', style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
                 ])),
             actions: [
               TextButton(
@@ -451,7 +503,7 @@ class HomePage extends StatelessWidget {
     ];
 
     return Scaffold(
-      extendBodyBehindAppBar: true, // Membuat body bisa di belakang AppBar jika AppBar transparan
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -460,9 +512,10 @@ class HomePage extends StatelessWidget {
             Text(
               'Sahabat Pancasila',
               style: TextStyle(
-                  color: isDark ? Colors.white.withOpacity(0.9) : Colors.black.withOpacity(0.8), // Warna judul AppBar
+                  color: isDark ? Colors.white.withOpacity(0.9) : Colors.black.withOpacity(0.8),
                   fontWeight: FontWeight.bold,
-                  shadows: [ // Shadow tipis untuk teks AppBar
+                  fontSize: 20, // Ukuran font judul AppBar
+                  shadows: [
                     Shadow(
                       blurRadius: 1.5,
                       color: Colors.black.withOpacity(0.25),
@@ -472,42 +525,37 @@ class HomePage extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Image.asset('assets/images/maskot_ceria.png', height: 35,
-                errorBuilder: (ctx, err, st) => const SizedBox.shrink()),
+            // Opsional: Tambahkan ikon kecil jika diinginkan
+            // Icon(Icons.shield_moon_rounded, color: isDark ? Colors.white.withOpacity(0.8) : Colors.black.withOpacity(0.7), size: 22)
           ],
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent, // AppBar dibuat transparan
-        elevation: 0, // Menghilangkan shadow bawaan AppBar
-        scrolledUnderElevation: 0, // Menghilangkan shadow saat di-scroll jika ada konten di bawahnya
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
       ),
       body: Container(
-        width: double.infinity, // Memastikan Container mengisi seluruh lebar
-        height: double.infinity, // Memastikan Container mengisi seluruh tinggi
-        decoration: BoxDecoration(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
           image: DecorationImage(
-            image: const AssetImage("assets/images/app_background.png"), // GANTI DENGAN NAMA FILE GAMBAR ANDA
+            image: AssetImage("assets/images/app_background.png"), // GANTI DENGAN NAMA FILE GAMBAR ANDA
             fit: BoxFit.cover,
-            // Opsional: Tambahkan colorFilter untuk menggelapkan/mencerahkan background
-            // colorFilter: ColorFilter.mode(
-            //   Colors.black.withOpacity(0.3), // 0.0 (original) - 1.0 (hitam penuh)
-            //   BlendMode.darken, // atau BlendMode.lighten, BlendMode.dstATop, dll.
-            // ),
           ),
         ),
-        child: SafeArea( // SafeArea agar konten tidak tertutup notch atau area sistem lainnya
+        child: SafeArea(
           child: Stack(
             children: [
               SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 92), // Padding lebih konsisten
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 92), // Padding bawah untuk mengakomodasi maskot
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    SizedBox(height: kToolbarHeight + 10), // Memberi ruang untuk AppBar transparan
+                    SizedBox(height: kToolbarHeight + 10),
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
                       decoration: BoxDecoration(
-                        color: theme.cardColor.withOpacity(0.88), // Opacity disesuaikan
+                        color: theme.cardColor.withOpacity(0.88),
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: [
                           BoxShadow(
@@ -524,7 +572,7 @@ class HomePage extends StatelessWidget {
                             style: theme.textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.primary,
-                                fontSize: 21, // Sedikit lebih besar
+                                fontSize: 21,
                                 shadows: [
                                   Shadow(blurRadius: 1.0, color: Colors.black.withOpacity(0.15), offset: const Offset(0.5,0.5)),
                                 ]
@@ -535,7 +583,7 @@ class HomePage extends StatelessWidget {
                             'Yuk, belajar Pancasila dengan seru bersama Sahabat Pancasila!',
                             style: theme.textTheme.titleMedium?.copyWith(
                                 color: (isDark ? Colors.white.withOpacity(0.9) : Colors.black.withOpacity(0.75)),
-                                fontSize: 14.5, // Sedikit lebih besar
+                                fontSize: 14.5,
                                 height: 1.3,
                                 shadows: [
                                   Shadow(blurRadius: 1.0, color: Colors.black.withOpacity(0.1), offset: const Offset(0.5,0.5)),
@@ -549,8 +597,8 @@ class HomePage extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
                       child: Wrap(
-                        spacing: 10.0, // Spasi antar item
-                        runSpacing: 14.0, // Spasi antar baris
+                        spacing: 10.0,
+                        runSpacing: 14.0,
                         alignment: WrapAlignment.center,
                         children: allMenuButtons.map((item) => SizedBox(
                           width: menuItemWidth,
@@ -560,20 +608,20 @@ class HomePage extends StatelessWidget {
                               imageAssetPath: item.imageAssetPath,
                               iconData: item.iconData,
                               backgroundColor: item.backgroundColor,
-                              onTap: item.onTap,
+                              onTap: item.onTap, // onTap sudah dimodifikasi untuk Tanya AI
                               circleDiameter: circleMenuDiameter
                           ),
                         )).toList(),
                       ),
                     ),
-                    const SizedBox(height: 80),
+                    const SizedBox(height: 80), // Ruang ekstra di bawah menu
                   ],
                 ),
               ),
               const BouncingMascotImage(
-                imagePath: 'assets/images/maskot.png', // Pastikan path benar
-                mascotHeight: 70,
-                mascotWidth: 70,
+                imagePath: 'assets/images/maskot.png', // Pastikan path ini benar
+                mascotHeight: 65, // Ukuran maskot disesuaikan
+                mascotWidth: 65,
                 funFacts: _pancasilaFunFacts,
               ),
             ],
