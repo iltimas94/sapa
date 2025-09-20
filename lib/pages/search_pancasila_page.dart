@@ -27,11 +27,11 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
   bool _hasSearched = false;
 
   final List<PancasilaTopic> _allPancasilaTopics = [
-    // 5 Sila Utama (yang sudah ada, bisa disesuaikan bahasanya jika perlu)
+    // ... (Daftar _allPancasilaTopics Anda tetap sama)
+    // 5 Sila Utama (1-5)
     PancasilaTopic(
       title: 'Sila ke-1: Ketuhanan Yang Maha Esa',
-      description:
-      'Artinya kita percaya dan takut kepada Tuhan yang menciptakan alam semesta ini.',
+      description: 'Artinya kita percaya dan takut kepada Tuhan yang menciptakan alam semesta ini.',
       lambang: 'Bintang Tunggal',
       butirPengamalan: [
         'Rajin berdoa sesuai agama masing-masing.',
@@ -41,8 +41,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
     ),
     PancasilaTopic(
       title: 'Sila ke-2: Kemanusiaan yang Adil dan Beradab',
-      description:
-      'Artinya kita harus saling menyayangi dan menghargai sesama manusia.',
+      description: 'Artinya kita harus saling menyayangi dan menghargai sesama manusia.',
       lambang: 'Rantai Emas',
       butirPengamalan: [
         'Membantu teman yang kesusahan.',
@@ -52,8 +51,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
     ),
     PancasilaTopic(
       title: 'Sila ke-3: Persatuan Indonesia',
-      description:
-      'Artinya kita harus bersatu sebagai bangsa Indonesia meskipun berbeda-beda.',
+      description: 'Artinya kita harus bersatu sebagai bangsa Indonesia meskipun berbeda-beda.',
       lambang: 'Pohon Beringin',
       butirPengamalan: [
         'Berteman dengan siapa saja tanpa memandang suku atau daerah.',
@@ -63,8 +61,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
     ),
     PancasilaTopic(
       title: 'Sila ke-4: Kerakyatan yang Dipimpin oleh Hikmat Kebijaksanaan dalam Permusyawaratan/Perwakilan',
-      description:
-      'Artinya kita menyelesaikan masalah bersama dengan berdiskusi atau musyawarah.',
+      description: 'Artinya kita menyelesaikan masalah bersama dengan berdiskusi atau musyawarah.',
       lambang: 'Kepala Banteng',
       butirPengamalan: [
         'Menghargai pendapat teman saat berdiskusi.',
@@ -74,8 +71,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
     ),
     PancasilaTopic(
       title: 'Sila ke-5: Keadilan Sosial bagi Seluruh Rakyat Indonesia',
-      description:
-      'Artinya semua orang di Indonesia berhak mendapatkan perlakuan yang adil.',
+      description: 'Artinya semua orang di Indonesia berhak mendapatkan perlakuan yang adil.',
       lambang: 'Padi dan Kapas',
       butirPengamalan: [
         'Berbagi makanan dengan teman.',
@@ -84,7 +80,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       ],
     ),
 
-    // 10 Materi Tambahan Pertama (yang sudah ada)
+    // 10 Materi Tambahan Pertama (6-15)
     PancasilaTopic(
       title: 'Arti Lambang Bintang (Sila ke-1)',
       description: 'Bintang emas bersudut lima melambangkan cahaya dari Tuhan untuk setiap manusia.',
@@ -108,7 +104,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
     PancasilaTopic(
       title: 'Arti Lambang Pohon Beringin (Sila ke-3)',
       description: 'Pohon beringin yang besar dan rindang melambangkan tempat berteduh dan bersatunya seluruh rakyat Indonesia.',
-      lambang: 'Pohon Beringin', // Duplikat dari sila ke-3, tapi fokus ke arti lambang
+      lambang: 'Pohon Beringin',
       butirPengamalan: [
         'Pohon beringin itu kuat, seperti Indonesia yang kuat karena bersatu.',
         'Akar yang menjalar kemana-mana artinya Indonesia punya banyak suku tapi tetap satu.',
@@ -118,7 +114,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
     PancasilaTopic(
       title: 'Arti Lambang Kepala Banteng (Sila ke-4)',
       description: 'Banteng adalah hewan sosial yang suka berkumpul, melambangkan musyawarah untuk mengambil keputusan.',
-      lambang: 'Kepala Banteng', // Duplikat dari sila ke-4, fokus arti lambang
+      lambang: 'Kepala Banteng',
       butirPengamalan: [
         'Saat berdiskusi, kita harus berani menyampaikan pendapat seperti banteng yang kuat.',
         'Keputusan bersama adalah hasil dari kekuatan bersama.',
@@ -128,7 +124,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
     PancasilaTopic(
       title: 'Arti Lambang Padi dan Kapas (Sila ke-5)',
       description: 'Padi melambangkan makanan (kebutuhan pokok) dan kapas melambangkan pakaian (kebutuhan pokok). Ini berarti keadilan untuk semua.',
-      lambang: 'Padi Kapas', // Bisa juga 'Padi dan Kapas'
+      lambang: 'Padi Kapas',
       butirPengamalan: [
         'Semua orang berhak mendapatkan makanan dan pakaian yang cukup.',
         'Kita tidak boleh serakah, harus berbagi.',
@@ -186,7 +182,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       ],
     ),
 
-    // 10 Materi Tambahan Kedua (Baru)
+    // 10 Materi Tambahan Kedua (16-25)
     PancasilaTopic(
       title: 'Menjaga Kebersihan Lingkungan',
       description: 'Lingkungan yang bersih membuat kita sehat dan nyaman. Ini adalah tanggung jawab kita semua.',
@@ -290,6 +286,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
   ];
 
   void _performSearch(String query) {
+    // ... (Fungsi _performSearch Anda tetap sama)
     if (query.isEmpty) {
       setState(() {
         _searchResults = [];
@@ -299,28 +296,28 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
     }
 
     final lowerCaseQuery = query.toLowerCase();
+    int? queryAsNumber;
+    try {
+      queryAsNumber = int.parse(lowerCaseQuery);
+    } catch (e) {
+      // bukan angka
+    }
+
     final results = _allPancasilaTopics.where((topic) {
+      if (queryAsNumber != null) {
+        if (topic.title.startsWith('Sila ke-$queryAsNumber')) {
+          return true;
+        }
+      }
       bool titleMatch = topic.title.toLowerCase().contains(lowerCaseQuery);
       bool descMatch = topic.description.toLowerCase().contains(lowerCaseQuery);
       bool lambangMatch = topic.lambang.toLowerCase().contains(lowerCaseQuery);
       bool butirMatch = topic.butirPengamalan.any((butir) => butir.toLowerCase().contains(lowerCaseQuery));
-
-      int? queryNumber;
-      try {
-        queryNumber = int.parse(lowerCaseQuery);
-      } catch (e) {
-        // bukan angka
-      }
-
-      bool silaNumberMatch = false;
-      if (queryNumber != null && topic.title.startsWith('Sila ke-$queryNumber')) {
-        silaNumberMatch = true;
-      }
+      bool silaQueryMatch = false;
       if (lowerCaseQuery.startsWith("sila ") && topic.title.toLowerCase().contains(lowerCaseQuery)) {
-        silaNumberMatch = true;
+        silaQueryMatch = true;
       }
-
-      return titleMatch || descMatch || lambangMatch || butirMatch || silaNumberMatch;
+      return titleMatch || descMatch || lambangMatch || butirMatch || silaQueryMatch;
     }).toList();
 
     setState(() {
@@ -328,6 +325,75 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
       _hasSearched = true;
     });
   }
+
+  // --- FUNGSI BARU UNTUK MENAMPILKAN DIALOG GAMBAR ---
+  void _showImageDialog(BuildContext context, String imagePath, String title) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Agar dialog tidak memenuhi seluruh layar
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                child: Text(
+                  title, // Tampilkan judul topik sebagai judul dialog
+                  style: Theme.of(dialogContext).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  // Batasi tinggi maksimum gambar agar tidak terlalu besar di layar kecil
+                  maxHeight: MediaQuery.of(dialogContext).size.height * 0.6,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  // Gunakan InteractiveViewer agar gambar bisa di-zoom dan di-pan
+                  child: InteractiveViewer(
+                    panEnabled: true, // Aktifkan pan
+                    minScale: 0.5,
+                    maxScale: 4.0,
+                    child: Image.asset(
+                      imagePath,
+                      fit: BoxFit.contain, // Pastikan seluruh gambar terlihat
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.broken_image, size: 60, color: Colors.grey.shade400),
+                              const SizedBox(height: 8),
+                              const Text("Gambar tidak ditemukan", style: TextStyle(color: Colors.grey)),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0, right: 16.0, top: 8.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    child: const Text('TUTUP', style: TextStyle(fontWeight: FontWeight.bold)),
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+  // --- BATAS FUNGSI BARU ---
 
   @override
   void dispose() {
@@ -340,7 +406,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Info Pancasila Anak SD'),
+        title: const Text('Info Pancasila'),
       ),
       body: Column(
         children: [
@@ -350,7 +416,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
               controller: _searchController,
               autofocus: true,
               decoration: InputDecoration(
-                hintText: 'Ketik kata kunci (misal: "bintang", "jujur", "sila 1")...',
+                hintText: 'Ketik (misal: "bintang", "jujur", "sila 1")...',
                 prefixIcon: const Icon(Icons.search_rounded),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -376,7 +442,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
           Expanded(
             child: _hasSearched
                 ? _searchResults.isEmpty
-                ? Center(
+                ? Center( /* ... Widget "Tidak Ketemu" ... */
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
@@ -409,89 +475,70 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
               ),
             )
                 : ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0, vertical: 8.0),
               itemCount: _searchResults.length,
-              itemBuilder: (context, index) {
-                final topic = _searchResults[index];
-                // String initial = topic.lambang.isNotEmpty && topic.lambang.length < 3 ? topic.lambang.substring(0,1).toUpperCase() : topic.title.substring(0,1).toUpperCase();
-                // if (topic.lambang.toLowerCase() == "bintang tunggal") initial = "B";
-                // if (topic.lambang.toLowerCase() == "rantai emas") initial = "R";
-                // if (topic.lambang.toLowerCase() == "pohon beringin") initial = "P";
-                // if (topic.lambang.toLowerCase() == "kepala banteng") initial = "K";
-                // if (topic.lambang.toLowerCase() == "padi dan kapas") initial = "PK";
-                // Logika inisial teks di atas tidak lagi digunakan untuk CircleAvatar utama
+              itemBuilder: (context, indexInSearchResults) {
+                final topic = _searchResults[indexInSearchResults];
+                final originalIndex = _allPancasilaTopics.indexOf(topic);
+                final imageNumber = originalIndex + 1;
+                final illustrationAssetPath = 'assets/images/$imageNumber.png';
 
-                // Tentukan path gambar berdasarkan topic.lambang
-                String imagePath;
+                String leadingImagePath;
+                // ... (switch case untuk leadingImagePath tetap sama)
                 switch (topic.lambang.toLowerCase()) {
                   case 'bintang tunggal':
-                  case 'bintang': // Tambahkan variasi jika perlu
-                    imagePath = 'assets/images/sila 1.png';
+                  case 'bintang':
+                    leadingImagePath = 'assets/images/sila 1.png';
                     break;
                   case 'rantai emas':
                   case 'rantai':
-                    imagePath = 'assets/images/sila 2.png';
+                    leadingImagePath = 'assets/images/sila 2.png';
                     break;
                   case 'pohon beringin':
-                    imagePath = 'assets/images/sila 3.png';
+                    leadingImagePath = 'assets/images/sila 3.png';
                     break;
                   case 'kepala banteng':
-                    imagePath = 'assets/images/sila 4.png';
+                    leadingImagePath = 'assets/images/sila 4.png';
                     break;
                   case 'padi dan kapas':
-                    imagePath = 'assets/images/sila 5.png';
+                  case 'padi kapas':
+                    leadingImagePath = 'assets/images/sila 5.png';
                     break;
-                // Tambahkan case untuk lambang-lambang lainnya jika ada
-                // Contoh:
-                // case 'sayang hewan tolong':
-                //   imagePath = 'assets/images/lambang_sayang_hewan.png'; // Ganti dengan nama file yang sesuai
-                //   break;
                   default:
-                  // Gambar default jika tidak ada lambang spesifik atau untuk topik umum
-                    imagePath = 'assets/images/lambang_default.png'; // Sediakan gambar default
+                    leadingImagePath = 'assets/images/lambang_default.png';
                 }
+
 
                 return Card(
                   elevation: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 6.0, horizontal: 8.0),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                   child: ExpansionTile(
+                    // ... (properti ExpansionTile lainnya tetap sama)
                     backgroundColor: theme.colorScheme.primaryContainer.withOpacity(0.1),
                     collapsedBackgroundColor: theme.cardColor,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     leading: CircleAvatar(
-                      backgroundColor: theme.colorScheme.primary.withOpacity(0.05), // Mungkin ingin warna yang lebih netral
-                      // Hapus child Text
-                      // child: Text(
-                      //   initial,
-                      //   style: TextStyle(
-                      //       fontWeight: FontWeight.bold,
-                      //       color: theme.colorScheme.primary),
-                      // ),
-                      // Ganti dengan Image.asset
+                      backgroundColor: theme.colorScheme.primary.withOpacity(0.05),
                       child: Padding(
-                        padding: const EdgeInsets.all(4.0), // Beri sedikit padding jika perlu
+                        padding: const EdgeInsets.all(4.0),
                         child: Image.asset(
-                          imagePath,
-                          fit: BoxFit.contain, // Atau BoxFit.cover, sesuaikan
-                          errorBuilder: (context, error, stackTrace) {
-                            // Fallback jika gambar gagal dimuat, bisa tampilkan inisial teks lagi atau ikon
+                          leadingImagePath,
+                          fit: BoxFit.contain,
+                          errorBuilder:
+                              (context, error, stackTrace) {
                             String fallbackInitial = topic.lambang.isNotEmpty && topic.lambang.length < 3
                                 ? topic.lambang.substring(0, 1).toUpperCase()
                                 : topic.title.substring(0, 1).toUpperCase();
-                            if (topic.lambang.toLowerCase() == "bintang tunggal") fallbackInitial = "B";
-                            if (topic.lambang.toLowerCase() == "rantai emas") fallbackInitial = "R";
-                            if (topic.lambang.toLowerCase() == "pohon beringin") fallbackInitial = "P";
-                            if (topic.lambang.toLowerCase() == "kepala banteng") fallbackInitial = "K";
-                            if (topic.lambang.toLowerCase() == "padi dan kapas") fallbackInitial = "PK";
-
                             return Text(
                               fallbackInitial,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18, // Sesuaikan ukuran font jika perlu
+                                fontSize: 18,
                                 color: theme.colorScheme.primary,
                               ),
                             );
@@ -512,48 +559,94 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
                     ),
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-                        child: Column(
+                        padding: const EdgeInsets.fromLTRB(
+                            16.0, 0, 16.0, 16.0),
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Divider(height: 12),
-                            Text(
-                              "Penjelasan:",
-                              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.secondary),
-                            ),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              topic.description,
-                              style: theme.textTheme.bodyMedium
-                                  ?.copyWith(height: 1.4),
-                            ),
-                            const SizedBox(height: 12.0),
-                            Text(
-                              'Contoh Sikap Sehari-hari:',
-                              style: theme.textTheme.titleSmall
-                                  ?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.secondary),
-                            ),
-                            const SizedBox(height: 6.0),
-                            ...topic.butirPengamalan.map(
-                                  (butir) => Padding(
-                                padding: const EdgeInsets.only(left: 0.0, bottom: 5.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 8.0, top: 2.0),
-                                      child: Text(
-                                        // Perluas array emoji jika jumlah topik melebihi 10 atau buat logika pemilihan emoji yang lebih baik
-                                          ['🌟', '🤝', '🌳', '🐃', '🌾', '🤝', '😊', '👍', '🇮🇩', '⏰', '🧹', '🤗', '👵', '📚', '🏡', '🙋', '⚽', '🐕', '🎭', '💪'][_allPancasilaTopics.indexOf(topic) % 20], // Update modulo dan array emoji
-                                          style: const TextStyle(fontSize: 14)
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                // ... (Konten teks tetap sama)
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Divider(height: 12),
+                                  Text(
+                                    "Penjelasan:",
+                                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.secondary),
+                                  ),
+                                  const SizedBox(height: 4.0),
+                                  Text(
+                                    topic.description,
+                                    style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
+                                  ),
+                                  const SizedBox(height: 12.0),
+                                  Text(
+                                    'Contoh Sikap Sehari-hari:',
+                                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.secondary),
+                                  ),
+                                  const SizedBox(height: 6.0),
+                                  ...topic.butirPengamalan.map(
+                                        (butir) => Padding(
+                                      padding: const EdgeInsets.only(left: 0.0, bottom: 5.0),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 8.0, top: 2.0),
+                                            child: Text(
+                                              ['🌟','🤝','🌳','🐃','🌾','💡','🔗','🌳','🐂','🍚','🤝','🌍','😊','✔️','🇮🇩','🧹','🙏','💖','📚','🏘️','🙋','⚽','🐕','🎭','💪'][originalIndex % 25],
+                                              style: const TextStyle(fontSize: 14),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Text(butir,
+                                                style: theme.textTheme.bodySmall?.copyWith(fontSize: 13.5, height: 1.3)),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    Expanded(
-                                      child: Text(butir,
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(fontSize: 13.5, height: 1.3)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 16.0),
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 12.0),
+                                child: AspectRatio(
+                                  aspectRatio: 1,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    // --- MODIFIKASI DI SINI: Tambahkan GestureDetector ---
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        _showImageDialog(context, illustrationAssetPath, topic.title);
+                                      },
+                                      child: Image.asset(
+                                        illustrationAssetPath,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade200,
+                                              borderRadius: BorderRadius.circular(8.0),
+                                              border: Border.all(color: Colors.grey.shade300),
+                                            ),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.image_not_supported_outlined,
+                                                color: Colors.grey.shade400,
+                                                size: 40,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
                                     ),
-                                  ],
+                                    // --- BATAS MODIFIKASI ---
+                                  ),
                                 ),
                               ),
                             ),
@@ -564,15 +657,14 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
                   ),
                 );
               },
-
             )
-                : Center( // Tampilan awal sebelum search
+                : Center( /* ... Widget "Mau Cari Apa Hari Ini?" ... */
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.manage_search_rounded, // Menggunakan ikon yang sudah ada dan valid
+                    Icon(Icons.manage_search_rounded,
                         size: 80, color: Colors.grey[400]),
                     const SizedBox(height: 16),
                     Text(
@@ -598,3 +690,4 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
     );
   }
 }
+

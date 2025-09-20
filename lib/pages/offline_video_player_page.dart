@@ -22,7 +22,7 @@ final List<AssetVideoInfo> _assetNationalSongs = [
   const AssetVideoInfo(
     title: 'Garuda Pancasila',
     assetPath: 'assets/videos/garuda_pancasila.mp4',
-    thumbnailAsset: 'assets/images/thumbnail_garuda_pancasila.png', // GANTI JIKA PERLU
+    thumbnailAsset: 'assets/images/garuda_pancasila.png', // GANTI JIKA PERLU
   ),
   const AssetVideoInfo(
     title: 'Indonesia Raya',
