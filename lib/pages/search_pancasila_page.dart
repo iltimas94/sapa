@@ -31,7 +31,7 @@ class _SearchPancasilaPageState extends State<SearchPancasilaPage> {
     // 5 Sila Utama (1-5)
     PancasilaTopic(
       title: 'Sila ke-1: Ketuhanan Yang Maha Esa',
-      description: 'Artinya kita percaya dan takut kepada Tuhan yang menciptakan alam semesta ini.',
+      description: 'Artinya kita percaya dan taqwa kepada Tuhan yang menciptakan alam semesta ini.',
       lambang: 'Bintang Tunggal',
       butirPengamalan: [
         'Rajin berdoa sesuai agama masing-masing.',

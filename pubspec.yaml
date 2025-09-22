@@ -69,6 +69,7 @@ dev_dependencies:
   url_launcher: ^6.0.0 # Gunakan versi terbaru yang tersedia
   youtube_player_flutter: ^9.1.1 # Gunakan versi terbaru yang tersedia
   flick_video_player: ^0.9.0
+  audioplayers: ^5.2.1
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -97,6 +98,8 @@ flutter:
     - assets/videos/garuda_pancasila.mp4
     - assets/videos/hari_merdeka.mp4
     - assets/videos/indonesia_raya.mp4
+    - assets/sounds/win.mp3
+    - assets/sounds/lose.mp3
     - assets/images/menu_music.png
     - assets/images/menu_ai_gemini.png
     - assets/images/menu_music.png
