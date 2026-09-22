@@ -6,6 +6,8 @@ import 'dart:math';
 import 'quiz_page.dart'; // Pastikan path ini benar jika file ada
 import 'offline_video_player_page.dart'; // Pastikan path ini benar
 import 'tanya_pancasila_ai_page.dart'; // Pastikan path ini benar
+import 'materi_smp_page.dart'; // Halaman materi untuk jenjang SMP
+import '../models/student_level.dart'; // Jenjang/kelas yang sedang aktif
 // SearchPancasilaPage dihandle via named routes di main.dart
 
 // --- Widget Animasi Garuda di Header (Bernapas) ---
@@ -230,7 +232,14 @@ class MenuButtonInfo {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.level, this.onLogout});
+
+  /// Jenjang/kelas yang sedang aktif (SD atau SMP kelas 7-9).
+  final StudentLevel level;
+
+  /// Dipanggil saat tombol logout ditekan agar pengguna kembali memilih
+  /// jenjang kelas. Penghapusan cache jenjang dilakukan oleh pemanggil.
+  final Future<void> Function()? onLogout;
 
   static const List<String> _pancasilaFunFacts = [
     "Pancasila dirumuskan oleh BPUPKI.",
@@ -282,6 +291,108 @@ class HomePage extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  /// Konfirmasi logout: pengguna kembali ke halaman pilih jenjang kelas.
+  Future<void> _confirmLogout(BuildContext context) async {
+    final theme = Theme.of(context);
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+          title: Row(children: [
+            Icon(Icons.logout_rounded, color: theme.colorScheme.primary),
+            const SizedBox(width: 10),
+            const Text('Ganti Jenjang Kelas'),
+          ]),
+          content: Text(
+            'Kamu akan kembali ke halaman pilih jenjang kelas. Pilihan saat ini '
+            '(${level.shortLabel}) akan dihapus dari perangkat ini. Lanjutkan?',
+            style: const TextStyle(fontSize: 15, height: 1.4),
+          ),
+          actionsAlignment: MainAxisAlignment.end,
+          actions: <Widget>[
+            TextButton(
+              child: Text('Batal',
+                  style: TextStyle(
+                      color: Colors.grey[700], fontWeight: FontWeight.w500)),
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
+              child: const Text('Logout',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      await onLogout?.call();
+    }
+  }
+
+  /// Badge kecil penanda jenjang yang sedang aktif pada AppBar.
+  Widget _buildLevelBadge(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.only(right: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primary.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+              color: theme.colorScheme.primary.withValues(alpha: 0.4)),
+        ),
+        child: Text(
+          level.shortLabel,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Info bahwa materi jenjang ini belum tersedia (kelas 8 dan kelas 9).
+  Widget _buildMateriBelumTersediaInfo(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      margin: const EdgeInsets.only(top: 4, bottom: 8),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14),
+        border:
+            Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Icon(Icons.info_outline_rounded, color: theme.colorScheme.primary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Materi ${level.kelasLabel} sedang disusun. Untuk sementara kamu tetap bisa bermain Kuis, mendengarkan Lagu Nasional, dan bertanya lewat Tanya AI.',
+              style: theme.textTheme.bodySmall?.copyWith(height: 1.45),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -387,23 +498,36 @@ class HomePage extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Hanya 4 menu yang akan ditampilkan
+    // Menu utama. Jenjang SD tetap memakai "Cari Sila" (materi SD tidak
+    // berubah), sedangkan jenjang SMP memakai halaman Materi sesuai kelasnya.
     final List<MenuButtonInfo> menuButtons = [
-      MenuButtonInfo(
-          title: 'Cari Sila',
-          description: 'Info sila & butir.', // Deskripsi tetap ada di model, tapi tidak ditampilkan
-          imageAssetPath: 'assets/images/menu_search_pancasila.png',
-          backgroundColor: const Color(0xFF42A5F5), // Biru
-          onTap: () {
-            Navigator.pushNamed(context, '/searchPancasila');
-          }),
+      level.isSmp
+          ? MenuButtonInfo(
+              title: 'Materi',
+              description: 'Materi PPKn ${level.kelasLabel}.',
+              imageAssetPath: 'assets/images/menu_search_pancasila.png',
+              backgroundColor: const Color(0xFF5C6BC0), // Indigo
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MateriSmpPage(level: level))))
+          : MenuButtonInfo(
+              title: 'Cari Sila',
+              description: 'Info sila & butir.', // Deskripsi tetap ada di model, tapi tidak ditampilkan
+              imageAssetPath: 'assets/images/menu_search_pancasila.png',
+              backgroundColor: const Color(0xFF42A5F5), // Biru
+              onTap: () {
+                Navigator.pushNamed(context, '/searchPancasila');
+              }),
       MenuButtonInfo(
           title: 'Kuis',
-          description: 'Asah ilmumu.',
+          description: level.isSmp ? 'Kuis PPKn SMP.' : 'Asah ilmumu.',
           imageAssetPath: 'assets/images/menu_quiz.png',
           backgroundColor: const Color(0xFFFFCA28), // Kuning
-          onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const QuizPage()))),
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => QuizPage(level: level)))),
       MenuButtonInfo(
           title: 'Tanya AI',
           description: 'Seputar Pancasila.',
@@ -464,16 +588,38 @@ class HomePage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
+        actions: <Widget>[
+          _buildLevelBadge(context),
+          IconButton(
+            tooltip: 'Logout: pilih jenjang kelas lain',
+            icon: Icon(
+              Icons.logout_rounded,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.9)
+                  : Colors.black.withValues(alpha: 0.8),
+            ),
+            onPressed: () => _confirmLogout(context),
+          ),
+        ],
       ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/app_background.png"),
-            fit: BoxFit.cover,
-          ),
-        ),
+        decoration: level.isSmp
+            ? const BoxDecoration(
+                // Tema SMP: latar biru muda yang lebih formal.
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: <Color>[Color(0xFFE8EAF6), Color(0xFFF7F9FC)],
+                ),
+              )
+            : const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/app_background.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
         child: SafeArea(
           child: Stack(
             children: [
@@ -499,7 +645,10 @@ class HomePage extends StatelessWidget {
                       child: Column(children: [
                         const AnimatedHeaderGarudaImage(), // Ukuran sudah disesuaikan di widgetnya
                         const SizedBox(height: 20),
-                        Text('Pendidikan Pancasila',
+                        Text(
+                            level.isSmp
+                                ? 'PPKn ${level.kelasLabel}'
+                                : 'Pendidikan Pancasila',
                             style: theme.textTheme.headlineMedium?.copyWith( // Ukuran font lebih besar
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.primary,
@@ -509,7 +658,9 @@ class HomePage extends StatelessWidget {
                             textAlign: TextAlign.center),
                         const SizedBox(height: 10),
                         Text(
-                            'Yuk, belajar Pancasila dengan seru bersama Sahabat Pancasila!',
+                            level.isSmp
+                                ? 'Yuk, pelajari materi PPKn, kuis, dan lagu nasional bersama Sahabat Pancasila!'
+                                : 'Yuk, belajar Pancasila dengan seru bersama Sahabat Pancasila!',
                             style: theme.textTheme.titleMedium?.copyWith( // Ukuran font sedikit lebih besar
                                 color: (isDark ? Colors.white.withOpacity(0.9) : Colors.black.withOpacity(0.75)),
                                 fontSize: 16,
@@ -521,6 +672,10 @@ class HomePage extends StatelessWidget {
                       ]),
                     ),
                     const SizedBox(height: 32), // Jarak ke menu ditambah
+
+                    // --- Info bila materi jenjang belum tersedia (kelas 8 & 9) ---
+                    if (!level.materiTersedia)
+                      _buildMateriBelumTersediaInfo(context),
 
                     // --- MENGGUNAKAN GridView UNTUK LAYOUT 2x2 ---
                     GridView.builder(

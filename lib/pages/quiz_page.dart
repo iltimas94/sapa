@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart'; // Untuk efek suara
+import '../data/kuis_kelas7.dart'; // Soal kuis khusus SMP Kelas 7
 import '../models/quiz_question.dart'; // Sesuaikan path jika model Anda berbeda lokasi
+import '../models/student_level.dart'; // Jenjang/kelas pengguna
 
 // Model data untuk pertanyaan kuis (jika belum ada di file terpisah)
 // Jika sudah ada di quiz_question.dart, Anda tidak perlu ini di sini.
@@ -17,7 +19,11 @@ import '../models/quiz_question.dart'; // Sesuaikan path jika model Anda berbeda
 // }
 
 class QuizPage extends StatefulWidget {
-  const QuizPage({super.key});
+  const QuizPage({super.key, this.level});
+
+  /// Jenjang pengguna. Bila SMP Kelas 7, soal yang dipakai adalah
+  /// `kuisKelas7` yang disusun dari materi kelas 7.
+  final StudentLevel? level;
 
   @override
   State<QuizPage> createState() => _QuizPageState();
@@ -103,6 +109,13 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
     ),
   ];
 
+  /// Soal yang dipakai sesuai jenjang pengguna: SMP Kelas 7 memakai soal
+  /// dari `kuisKelas7`, jenjang lain memakai soal dasar.
+  List<QuizQuestion> get _questionSet =>
+      widget.level == StudentLevel.smp7 && kuisKelas7.isNotEmpty
+          ? kuisKelas7
+          : _basicQuestions;
+
   List<QuizQuestion> _currentQuestions = [];
   String _quizTitle = 'Kuis Pancasila';
 
@@ -138,9 +151,11 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
     // List<QuizQuestion> shuffledQuestions = List.from(_basicQuestions)..shuffle();
 
     setState(() {
-      _currentQuestions = List.from(_basicQuestions); // Gunakan urutan asli
+      _currentQuestions = List<QuizQuestion>.from(_questionSet); // Gunakan urutan asli
       // _currentQuestions = shuffledQuestions; // Jika ingin acak
-      _quizTitle = 'Kuis Pancasila';
+      _quizTitle = widget.level == StudentLevel.smp7
+          ? 'Kuis PPKn SMP Kelas 7'
+          : 'Kuis Pancasila';
       _currentQuestionIndex = 0;
       _score = 0;
       _selectedOptionIndex = null;
@@ -364,13 +379,17 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
             ),
             const SizedBox(height: 32),
             Text(
-              'Selamat Datang di Kuis Pancasila!',
+              widget.level == StudentLevel.smp7
+                  ? 'Selamat Datang di Kuis PPKn Kelas 7!'
+                  : 'Selamat Datang di Kuis Pancasila!',
               style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Uji pemahamanmu tentang dasar negara kita.',
+              widget.level == StudentLevel.smp7
+                  ? 'Uji pemahamanmu tentang materi PPKn kelas 7.'
+                  : 'Uji pemahamanmu tentang dasar negara kita.',
               style: theme.textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
@@ -501,7 +520,9 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: Text(!_quizStarted || _currentQuestions.isEmpty
-            ? 'Kuis Pancasila'
+            ? (widget.level == StudentLevel.smp7
+                ? 'Kuis PPKn Kelas 7'
+                : 'Kuis Pancasila')
             : '$_quizTitle (${_currentQuestionIndex + 1}/${_currentQuestions.length})'),
         bottom: _quizStarted && _currentQuestions.isNotEmpty
             ? PreferredSize(
