@@ -27,16 +27,16 @@ enum StudentLevel {
     isSmp: true,
     materiTersedia: true,
     icon: Icons.menu_book_rounded,
-    color: Color(0xFF3949AB),
+    color: Color(0xFF42A5F5),
   ),
   smp8(
     id: 'smp-8',
     jenjang: 'SMP',
     kelasLabel: 'Kelas 8',
     shortLabel: 'SMP 8',
-    description: 'Materi sedang disusun. Kuis, Lagu, dan Tanya AI tetap aktif.',
+    description: 'Pancasila sebagai dasar negara, UUD 1945, peraturan, dan budaya.',
     isSmp: true,
-    materiTersedia: false,
+    materiTersedia: true,
     icon: Icons.school_rounded,
     color: Color(0xFF1E88E5),
   ),
@@ -49,7 +49,7 @@ enum StudentLevel {
     isSmp: true,
     materiTersedia: false,
     icon: Icons.workspace_premium_rounded,
-    color: Color(0xFF0288D1),
+    color: Color(0xFF283593),
   );
 
   const StudentLevel({

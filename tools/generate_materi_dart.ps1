@@ -41,6 +41,26 @@ function ConvertTo-DartString([string]$value) {
     return $escaped
 }
 
+# Mengembalikan singkatan yang rusak akibat konversi Title Case
+# (contoh: "Uud" kembali menjadi "UUD").
+function Restore-Acronyms([string]$title) {
+    $map = [ordered]@{
+        'Uud'   = 'UUD'
+        'Bpupk' = 'BPUPK'
+        'Ppki'  = 'PPKI'
+        'Uu'    = 'UU'
+        'Dpr'   = 'DPR'
+        'Mpr'   = 'MPR'
+        'Nkri'  = 'NKRI'
+        'Sara'  = 'SARA'
+    }
+    $result = $title
+    foreach ($key in $map.Keys) {
+        $result = $result -creplace "\b$([regex]::Escape($key))\b", $map[$key]
+    }
+    return $result
+}
+
 # --- 1. Baca word/document.xml dari dalam file .docx (format zip) ---
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::OpenRead($DocxPath)
@@ -116,6 +136,13 @@ if ($null -ne $current) { $sections.Add($current) }
 
 if ($sections.Count -eq 0) {
     throw "Tidak ada bab materi yang terbaca. Pastikan judul bab memakai format 'MATERI 1: JUDUL'."
+}
+
+# Nomor bab mengikuti urutan dokumen sehingga nomor ganda di dokumen sumber
+# (mis. dua "MATERI 4") otomatis diperbaiki dan id unik.
+for ($index = 0; $index -lt $sections.Count; $index++) {
+    $sections[$index].number = $index + 1
+    $sections[$index].title = Restore-Acronyms $sections[$index].title
 }
 
 foreach ($section in $sections) {

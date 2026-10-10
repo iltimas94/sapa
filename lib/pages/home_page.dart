@@ -7,6 +7,7 @@ import 'quiz_page.dart'; // Pastikan path ini benar jika file ada
 import 'offline_video_player_page.dart'; // Pastikan path ini benar
 import 'tanya_pancasila_ai_page.dart'; // Pastikan path ini benar
 import 'materi_smp_page.dart'; // Halaman materi untuk jenjang SMP
+import '../theme/app_theme.dart'; // Tema & palet warna per jenjang
 import '../models/student_level.dart'; // Jenjang/kelas yang sedang aktif
 // SearchPancasilaPage dihandle via named routes di main.dart
 
@@ -500,13 +501,17 @@ class HomePage extends StatelessWidget {
 
     // Menu utama. Jenjang SD tetap memakai "Cari Sila" (materi SD tidak
     // berubah), sedangkan jenjang SMP memakai halaman Materi sesuai kelasnya.
+    // Warna lingkaran menu mengikuti tema jenjang (SD warna-warni, SMP
+    // makin beraturan dari kelas 7 ke kelas 9).
+    final List<Color> menuColors = AppTheme.menuPalette(level);
+
     final List<MenuButtonInfo> menuButtons = [
       level.isSmp
           ? MenuButtonInfo(
               title: 'Materi',
               description: 'Materi PPKn ${level.kelasLabel}.',
               imageAssetPath: 'assets/images/menu_search_pancasila.png',
-              backgroundColor: const Color(0xFF5C6BC0), // Indigo
+              backgroundColor: menuColors[0],
               onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -515,7 +520,7 @@ class HomePage extends StatelessWidget {
               title: 'Cari Sila',
               description: 'Info sila & butir.', // Deskripsi tetap ada di model, tapi tidak ditampilkan
               imageAssetPath: 'assets/images/menu_search_pancasila.png',
-              backgroundColor: const Color(0xFF42A5F5), // Biru
+              backgroundColor: menuColors[0], // Warna pertama palet jenjang
               onTap: () {
                 Navigator.pushNamed(context, '/searchPancasila');
               }),
@@ -523,7 +528,7 @@ class HomePage extends StatelessWidget {
           title: 'Kuis',
           description: level.isSmp ? 'Kuis PPKn SMP.' : 'Asah ilmumu.',
           imageAssetPath: 'assets/images/menu_quiz.png',
-          backgroundColor: const Color(0xFFFFCA28), // Kuning
+          backgroundColor: menuColors[1],
           onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -532,7 +537,7 @@ class HomePage extends StatelessWidget {
           title: 'Tanya AI',
           description: 'Seputar Pancasila.',
           imageAssetPath: 'assets/images/menu_ai_gemini.png',
-          backgroundColor: const Color(0xFFBA68C8), // Ungu
+          backgroundColor: menuColors[2],
           onTap: () async {
             final bool? confirm = await _showTanyaAiConfirmationDialog(context);
             if (confirm == true && context.mounted) {
@@ -544,7 +549,7 @@ class HomePage extends StatelessWidget {
           title: 'Lagu',
           description: 'Pilih Lagu Nasional.',
           imageAssetPath: 'assets/images/menu_music.png',
-          backgroundColor: const Color(0xFFFFA726), // Oranye
+          backgroundColor: menuColors[3],
           onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -605,21 +610,9 @@ class HomePage extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: level.isSmp
-            ? const BoxDecoration(
-                // Tema SMP: latar biru muda yang lebih formal.
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: <Color>[Color(0xFFE8EAF6), Color(0xFFF7F9FC)],
-                ),
-              )
-            : const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/app_background.png"),
-                  fit: BoxFit.cover,
-                ),
-              ),
+        // Latar mengikuti tema jenjang: SD memakai gambar ceria, SMP memakai
+        // gradasi lembut yang makin pekat dari kelas 7 ke kelas 9.
+        decoration: AppTheme.bodyDecoration(level),
         child: SafeArea(
           child: Stack(
             children: [
