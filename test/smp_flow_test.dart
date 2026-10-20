@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sapa/data/materi_kelas7.dart';
 import 'package:sapa/data/materi_kelas8.dart';
+import 'package:sapa/data/materi_kelas9.dart';
 import 'package:sapa/models/student_level.dart';
 import 'package:sapa/pages/home_page.dart';
 import 'package:sapa/pages/materi_smp_page.dart';
@@ -66,16 +67,35 @@ void main() {
     expect(find.text('Pengantar'), findsOneWidget);
   });
 
-  testWidgets('Materi Kelas 9 (belum ada) menampilkan info segera hadir',
+  testWidgets('Materi Kelas 9 menampilkan 5 bab dari dokumen Word',
       (WidgetTester tester) async {
+    // Perbesar viewport layar uji supaya seluruh daftar bab muat di layar.
+    tester.view.physicalSize = const Size(1080, 6000);
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     await tester.pumpWidget(
       const MaterialApp(
         home: MateriSmpPage(level: StudentLevel.smp9),
       ),
     );
 
-    await tester.pump();
-    expect(find.textContaining('segera hadir'), findsOneWidget);
+    expect(materiKelas9.length, 5);
+    expect(
+        materiKelas9.first.title.startsWith('Hubungan Pancasila Dengan'),
+        isTrue);
+    expect(materiKelas9.last.title,
+        'Menjaga Keutuhan Wilayah Negara Kesatuan Republik Indonesia');
+
+    expect(find.text('Materi 1'), findsOneWidget);
+    expect(find.text('Materi 5'), findsOneWidget);
+    expect(find.text('Hak Dan Kewajiban Warga Negara'), findsOneWidget);
+
+    await tester.tap(find.text('Hak Dan Kewajiban Warga Negara'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Pengantar'), findsOneWidget);
   });
 
   testWidgets('Halaman utama SMP menampilkan menu, badge, dan tombol logout',
@@ -153,10 +173,10 @@ void main() {
         isNot(equals(AppTheme.bodyDecoration(StudentLevel.smp9).gradient)));
   });
 
-  test('Materi kelas 8 dianggap tersedia, kelas 9 belum', () {
-    expect(StudentLevel.smp8.materiTersedia, isTrue);
-    expect(StudentLevel.smp9.materiTersedia, isFalse);
+  test('Semua jenjang kini punya materi tersedia', () {
     expect(StudentLevel.sd.materiTersedia, isTrue);
     expect(StudentLevel.smp7.materiTersedia, isTrue);
+    expect(StudentLevel.smp8.materiTersedia, isTrue);
+    expect(StudentLevel.smp9.materiTersedia, isTrue);
   });
 }

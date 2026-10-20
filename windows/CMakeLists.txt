@@ -32,6 +32,13 @@ set(CMAKE_CXX_FLAGS_PROFILE "${CMAKE_CXX_FLAGS_RELEASE}")
 # Use Unicode for all projects.
 add_definitions(-DUNICODE -D_UNICODE)
 
+# MSVC dari Visual Studio 2026 (14.5x) menaikkan status deprecated header
+# <experimental/coroutine> (dipakai plugin Windows berbasis C++/WinRT seperti
+# audioplayers_windows dan flutter_inappwebview_windows) dari peringatan
+# menjadi error STL1011. Definisi berikut mengembalikannya menjadi peringatan
+# agar plugin tersebut tetap bisa dikompilasi.
+add_definitions(-D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
+
 # Compilation settings that should be applied to most targets.
 #
 # Be cautious about adding new options here, as plugins use this function by

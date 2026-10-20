@@ -45,9 +45,9 @@ enum StudentLevel {
     jenjang: 'SMP',
     kelasLabel: 'Kelas 9',
     shortLabel: 'SMP 9',
-    description: 'Materi sedang disusun. Kuis, Lagu, dan Tanya AI tetap aktif.',
+    description: 'Pancasila & UUD 1945, hak-wajib warga negara, dan NKRI.',
     isSmp: true,
-    materiTersedia: false,
+    materiTersedia: true,
     icon: Icons.workspace_premium_rounded,
     color: Color(0xFF283593),
   );

@@ -12,7 +12,7 @@ dibuka:
 | SD Kelas 1 - 6 | Kuning/amber + warna-warni (ceria, kanak-kanak) | Menu "Cari Sila" (materi SD, tidak berubah) |
 | SMP Kelas 7 | Biru langit cerah (awal transisi, masih ramah) | `lib/data/materi_kelas7.dart` (5 bab) |
 | SMP Kelas 8 | Biru sedang (mapan, lebih teratur) | `lib/data/materi_kelas8.dart` (5 bab) |
-| SMP Kelas 9 | Navy/indigo tua (formal, siap SMA) | Belum tersedia (menampilkan info "segera hadir") |
+| SMP Kelas 9 | Navy/indigo tua (formal, siap SMA) | `lib/data/materi_kelas9.dart` (5 bab) |
 
 Tema tiap jenjang mencakup warna dasar, AppBar, latar halaman utama, dan palet
 warna menu (lihat `lib/theme/app_theme.dart`: `forLevel`, `menuPalette`, dan
@@ -25,20 +25,23 @@ pengguna langsung masuk ke halaman utama sesuai jenjangnya. Tombol **logout**
 pada AppBar menghapus cache tersebut dan mengembalikan pengguna ke halaman
 pilih jenjang.
 
-## Menambah materi SMP (kelas 9)
+## Menambah / memperbarui materi SMP (kelas 7, 8, 9)
+
+Semua jenjang kini punya materi (masing-masing 5 bab). Untuk memperbarui
+atau menambah bab:
 
 1. Siapkan dokumen `.docx` dengan judul bab memakai format `MATERI 1: JUDUL`.
-2. Jalankan generator:
+2. Jalankan generator, contoh untuk kelas 9:
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File tools/generate_materi_dart.ps1 `
        -DocxPath "D:/Download/Kelas IX.docx" -Kelas 9
    ```
 
-3. `lib/data/materi_kelas9.dart` akan terisi otomatis dan langsung tampil pada
-   menu **Materi** untuk jenjang SMP Kelas 9. Setelah materi kelas 9 terisi,
-   ubah juga `materiTersedia` pada `lib/models/student_level.dart` menjadi
-   `true` agar banner "segera hadir" di halaman utama hilang.
+3. `lib/data/materi_kelas9.dart` langsung terisi dan tampil pada menu
+   **Materi** jenjang tersebut. Bila kelak ada kelas yang materinya
+   dikosongkan lagi, set `materiTersedia` di `lib/models/student_level.dart`
+   menjadi `false` supaya banner "segera hadir" tampil di halaman utama.
 
 Catatan: nomor bab otomatis mengikuti urutan dokumen, jadi typo nomor di
 dokumen sumber (misalnya dua "MATERI 4" seperti pada Kelas VIII) tetap aman
@@ -80,6 +83,42 @@ Skrip itu membersihkan `desktop.ini` + atribut ReadOnly lalu menjalankan
    attrib -r "build\*.*" /s /d
    Get-ChildItem -Recurse -Force -Filter desktop.ini build | Remove-Item -Force
    ```
+
+## Build Windows di mesin ini (Visual Studio 2026)
+
+Mesin ini hanya punya toolchain C++ di **Visual Studio Build Tools 2026 (v18)**;
+VS 2022 Community terpasang tetapi tanpa workload C++ (tidak ada `cl.exe`).
+Flutter 3.32.7 belum mengenali versi 18 sehingga mengirim generator CMake
+`Visual Studio 16 2019` yang tidak ada, dan build Windows gagal dengan:
+
+```
+CMake Error: generator : Visual Studio 16 2019
+Does not match the generator used previously: Visual Studio 17 2022
+```
+
+Dua hal berikut sudah dikerjakan dan perlu dijaga:
+
+1. **Patch lokal SDK Flutter** di
+   `D:\Android\flutter_windows_3.32.7-stable\flutter\packages\flutter_tools\lib\src\windows\visual_studio.dart`,
+   menambahkan cabang `18 => 'Visual Studio 18 2026'` pada `cmakeGenerator`
+   (baris ~190). Karena instalasinya ZIP, snapshot `flutter_tools` harus
+   dikompilasi ulang setelah patch: hapus
+   `flutter\bin\cache\flutter_tools.stamp` dan `flutter_tools.snapshot`.
+   **Patch ini hilang bila Flutter di-upgrade** — ulangi langkahnya setelah
+   upgrade, atau pasang workload *Desktop development with C++* pada VS 2022
+   Community lalu hapus patch (Flutter akan memakai VS 17 2022).
+2. **`windows/CMakeLists.txt`** menambahkan
+   `add_definitions(-D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)`
+   karena MSVC 14.5x (VS 2026) menaikkan deprecated header
+   `<experimental/coroutine>` yang dipakai plugin `audioplayers_windows` dan
+   `flutter_inappwebview_windows` menjadi error STL1011.
+
+Bila muncul lagi error generator mismatch, hapus folder `build/windows`
+(lakukan `attrib -r "build\windows\*.*" /s /d` dulu bila folder terkunci
+atribut ReadOnly buatan Google Drive) lalu build ulang.
+
+Build desktop: `flutter build windows --debug` (keluaran:
+`build\windows\x64\runner\Debug\sapa.exe`).
 
 ## Menjalankan
 
