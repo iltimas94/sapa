@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import '../data/materi_kelas7.dart';
 import '../data/materi_kelas8.dart';
 import '../data/materi_kelas9.dart';
+import '../materi/bank_materi_page.dart';
+import '../materi/materi_kelas7_data.dart' as k7_data;
+import '../materi_kelas8/materi_kelas8_bank_page.dart';
+import '../materi_kelas9/materi_core.dart' as k9_core;
+import '../materi_kelas9/materi_kelas9_data.dart' as k9_data;
 import '../models/materi_content.dart';
 import '../models/student_level.dart';
 import 'quiz_page.dart';
@@ -55,6 +60,30 @@ class _MateriSmpPageState extends State<MateriSmpPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.level == StudentLevel.smp7) {
+      return BankMateriPage(
+        judul: 'Materi Kelas VII',
+        daftar: k7_data.materiKelas7,
+        onBukaKuis: () => Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+            builder: (_) => QuizPage(level: widget.level),
+          ),
+        ),
+      );
+    }
+
+    if (widget.level == StudentLevel.smp8) {
+      return const BankMateriKelas8Page();
+    }
+
+    if (widget.level == StudentLevel.smp9) {
+      return k9_core.MateriBankPage(
+        judulKelas: 'Kelas IX',
+        daftarMateri: k9_data.materiKelas9,
+      );
+    }
+
     final ThemeData theme = Theme.of(context);
     final bool materiBelumAda = _sections.isEmpty;
 

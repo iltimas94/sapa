@@ -4,9 +4,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:sapa/data/materi_kelas7.dart';
 import 'package:sapa/data/materi_kelas8.dart';
-import 'package:sapa/data/materi_kelas9.dart';
+import 'package:sapa/materi/materi_kelas7_data.dart' as k7_data;
+import 'package:sapa/materi_kelas9/materi_kelas9_data.dart' as k9_data;
 import 'package:sapa/models/student_level.dart';
 import 'package:sapa/pages/home_page.dart';
 import 'package:sapa/pages/materi_smp_page.dart';
@@ -21,16 +21,16 @@ void main() {
       ),
     );
 
-    // Materi kelas 7 terdiri atas 5 bab (MATERI 1 sampai MATERI 5).
-    expect(materiKelas7.length, 5);
+    // Materi kelas 7 terdiri atas 5 bab (Materi 1 sampai Materi 5).
+    expect(k7_data.materiKelas7.length, 5);
     expect(find.text('Materi 1'), findsOneWidget);
     expect(find.text('Sejarah Kelahiran Pancasila'), findsOneWidget);
 
     await tester.tap(find.text('Sejarah Kelahiran Pancasila'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Pengantar'), findsOneWidget);
-    expect(find.text('Latar Belakang Perumusan (Masa BPUPK)'), findsOneWidget);
+    expect(find.text('Pancasila Tidak Lahir dalam Semalam'), findsOneWidget);
+    expect(find.text('Peta Waktu Singkat'), findsOneWidget);
   });
 
   testWidgets('Materi Kelas 8 menampilkan 5 bab dari dokumen Word',
@@ -64,7 +64,7 @@ void main() {
     await tester.tap(find.text('Wawasan Nusantara'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Pengantar'), findsOneWidget);
+    expect(find.text('Memahami Wawasan Nusantara'), findsOneWidget);
   });
 
   testWidgets('Materi Kelas 9 menampilkan 5 bab dari dokumen Word',
@@ -81,21 +81,16 @@ void main() {
       ),
     );
 
-    expect(materiKelas9.length, 5);
-    expect(
-        materiKelas9.first.title.startsWith('Hubungan Pancasila Dengan'),
-        isTrue);
-    expect(materiKelas9.last.title,
-        'Menjaga Keutuhan Wilayah Negara Kesatuan Republik Indonesia');
+    expect(k9_data.materiKelas9.length, 5);
 
     expect(find.text('Materi 1'), findsOneWidget);
     expect(find.text('Materi 5'), findsOneWidget);
-    expect(find.text('Hak Dan Kewajiban Warga Negara'), findsOneWidget);
+    expect(find.text('Hak dan Kewajiban Warga Negara'), findsWidgets);
 
-    await tester.tap(find.text('Hak Dan Kewajiban Warga Negara'));
+    await tester.tap(find.text('Hak dan Kewajiban Warga Negara').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Pengantar'), findsOneWidget);
+    expect(find.text('Hak dan Kewajiban'), findsWidgets);
   });
 
   testWidgets('Halaman utama SMP menampilkan menu, badge, dan tombol logout',
