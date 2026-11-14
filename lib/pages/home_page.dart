@@ -233,14 +233,10 @@ class MenuButtonInfo {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.level, this.onLogout});
+  const HomePage({super.key, required this.level});
 
   /// Jenjang/kelas yang sedang aktif (SD atau SMP kelas 7-9).
   final StudentLevel level;
-
-  /// Dipanggil saat tombol logout ditekan agar pengguna kembali memilih
-  /// jenjang kelas. Penghapusan cache jenjang dilakukan oleh pemanggil.
-  final Future<void> Function()? onLogout;
 
   static const List<String> _pancasilaFunFacts = [
     "Pancasila dirumuskan oleh BPUPKI.",
@@ -293,55 +289,6 @@ class HomePage extends StatelessWidget {
         );
       },
     );
-  }
-
-  /// Konfirmasi logout: pengguna kembali ke halaman pilih jenjang kelas.
-  Future<void> _confirmLogout(BuildContext context) async {
-    final theme = Theme.of(context);
-    final bool? confirmed = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-          title: Row(children: [
-            Icon(Icons.logout_rounded, color: theme.colorScheme.primary),
-            const SizedBox(width: 10),
-            const Text('Ganti Jenjang Kelas'),
-          ]),
-          content: Text(
-            'Kamu akan kembali ke halaman pilih jenjang kelas. Pilihan saat ini '
-            '(${level.shortLabel}) akan dihapus dari perangkat ini. Lanjutkan?',
-            style: const TextStyle(fontSize: 15, height: 1.4),
-          ),
-          actionsAlignment: MainAxisAlignment.end,
-          actions: <Widget>[
-            TextButton(
-              child: Text('Batal',
-                  style: TextStyle(
-                      color: Colors.grey[700], fontWeight: FontWeight.w500)),
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              ),
-              child: const Text('Logout',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (confirmed == true) {
-      await onLogout?.call();
-    }
   }
 
   /// Badge kecil penanda jenjang yang sedang aktif pada AppBar.
@@ -595,16 +542,6 @@ class HomePage extends StatelessWidget {
         scrolledUnderElevation: 0,
         actions: <Widget>[
           _buildLevelBadge(context),
-          IconButton(
-            tooltip: 'Logout: pilih jenjang kelas lain',
-            icon: Icon(
-              Icons.logout_rounded,
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.9)
-                  : Colors.black.withValues(alpha: 0.8),
-            ),
-            onPressed: () => _confirmLogout(context),
-          ),
         ],
       ),
       body: Container(

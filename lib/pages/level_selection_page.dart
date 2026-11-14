@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../models/student_level.dart';
+import 'home_page.dart';
 
-/// Halaman pertama aplikasi: memilih jenjang/kelas.
-///
-/// Halaman ini muncul saat pengguna baru pertama kali membuka aplikasi
-/// atau setelah menekan tombol logout.
+/// Halaman utama awal aplikasi: memilih jenjang/kelas.
 class LevelSelectionPage extends StatelessWidget {
   const LevelSelectionPage({
     super.key,
-    required this.onLevelSelected,
-    this.isSwitching = false,
+    this.onLevelSelected,
   });
 
-  /// Dipanggil saat pengguna memilih salah satu jenjang. Penyimpanan ke
-  /// cache lokal dilakukan oleh pemanggil (lihat `LevelStorage`).
-  final ValueChanged<StudentLevel> onLevelSelected;
-
-  /// True bila halaman ini tampil karena tombol logout ditekan.
-  final bool isSwitching;
+  /// Opsional: dipanggil saat pengguna memilih jenjang (dipakai untuk widget testing).
+  final ValueChanged<StudentLevel>? onLevelSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -69,16 +62,14 @@ class LevelSelectionPage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                isSwitching
-                    ? 'Pilih jenjang kelas yang baru'
-                    : 'Pilih jenjang kelasmu dulu ya!',
+                'Pilih jenjang kelas yang ingin kamu pelajari!',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 6),
               Text(
-                'Pilihanmu tersimpan otomatis di perangkat ini, jadi tidak perlu memilih ulang setiap membuka aplikasi.',
+                'Silakan pilih kelas untuk mulai belajar materi, kuis, dan lagu nasional.',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall
                     ?.copyWith(color: Colors.grey[700], height: 1.4),
@@ -91,13 +82,6 @@ class LevelSelectionPage extends StatelessWidget {
               _buildSectionTitle(context, 'SMP - Sekolah Menengah Pertama'),
               ...smpLevels.map((StudentLevel level) =>
                   _buildLevelCard(context, level)),
-              const SizedBox(height: 20),
-              Text(
-                'Kamu bisa menekan tombol logout di halaman utama untuk kembali ke halaman ini dan memilih jenjang lain.',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: Colors.grey[600], height: 1.4),
-              ),
             ],
           ),
         ),
@@ -128,7 +112,18 @@ class LevelSelectionPage extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () => onLevelSelected(level),
+        onTap: () {
+          if (onLevelSelected != null) {
+            onLevelSelected!(level);
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => HomePage(level: level),
+              ),
+            );
+          }
+        },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           child: Row(
